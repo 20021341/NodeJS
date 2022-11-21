@@ -117,11 +117,11 @@ let getFacilityInfoByID = (facility_id) => {
     return new Promise(async (resolve, reject) => {
         try {
             let facility = await db.Facility.findOne({
-                where: { facility_id: userID },
+                where: { facility_id: facility_id },
                 raw: true
             });
 
-            if (user) {
+            if (facility) {
                 resolve({
                     errCode: 0,
                     message: 'OK',
