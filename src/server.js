@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const viewEngine = require('./config/viewEngine');
-const initWebRoutes = require('./route/web');
+const initAPIRoutes = require('./route/api');
 const connectDB = require('./config/connectDB');
 require('dotenv').config();
 
@@ -17,7 +17,7 @@ app.use(cors({
 }))
 
 viewEngine(app);
-initWebRoutes(app);
+initAPIRoutes(app);
 
 connectDB();
 

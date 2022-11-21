@@ -1,54 +1,45 @@
 const db = require('../models/index');
 
-let userLogin = (username, password) => {
+let facilityLogin = (username, password) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let userData = {};
-            let isExist = await checkUsername(username);
+            let data = {};
+            let facility = await findUsername(username);
 
-            if (isExist) {
-                let user = await db.Facility.findOne({
-                    where: { username: username },
-                    raw: true,
-                });
-
-                if (user) {
-                    if (password.localeCompare(user.password) == 0) {
-                        userData.errCode = 0;
-                        userData.message = 'OK';
-                        delete user.password;
-                        userData.user = user;
-                    } else {
-                        userData.errCode = 3;
-                        userData.message = 'Wrong password';
-                    }
+            if (facility) {
+                if (password.localeCompare(facility.password) == 0) {
+                    data.errCode = 0;
+                    data.message = 'OK';
+                    delete facility.password;
+                    data.facility = facility;
                 } else {
-                    userData.errCode = 2;
-                    userData.message = 'User not found!';
+                    data.errCode = 3;
+                    data.message = 'Wrong password';
                 }
             } else {
-                userData.errCode = 1;
-                userData.message = 'User not found!';
+                data.errCode = 1;
+                data.message = 'User not found!';
             }
 
-            resolve(userData);
+            resolve(data);
         } catch (e) {
             reject(e);
         }
     });
 }
 
-let checkUsername = (username) => {
+let findUsername = (username) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let user = await db.Facility.findOne({
-                where: { username: username }
+            let facility = await db.Facility.findOne({
+                where: { username: username },
+                raw: true
             });
 
-            if (user) {
-                resolve(true);
+            if (facility) {
+                resolve(facility);
             } else {
-                resolve(false);
+                resolve({});
             }
         } catch (e) {
             reject(e);
@@ -56,23 +47,23 @@ let checkUsername = (username) => {
     });
 }
 
-let createNewUser = (userData) => {
+let createNewFacility = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let check = await checkUsername(userData.username);
+            let facility = await checkUsername(userData.username);
 
-            if (check) {
+            if (facility) {
                 // username da ton tai
                 resolve(false);
             } else {
                 // username chua ton tai
                 // tao user moi
                 await db.Facility.create({
-                    name: userData.name,
-                    username: userData.username,
-                    password: userData.password,
-                    address: userData.address,
-                    role: userData.role
+                    name: data.name,
+                    username: data.username,
+                    password: data.password,
+                    address: data.address,
+                    role: data.role
                 });
                 resolve(true);
             }
@@ -83,7 +74,7 @@ let createNewUser = (userData) => {
     })
 }
 
-let updateUser = (data) => {
+let updateFacility = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
             await db.Facility.update(
@@ -104,17 +95,17 @@ let updateUser = (data) => {
     });
 }
 
-let getAllUsers = () => {
+let getAllFacilities = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            let users = await db.Facility.findAll({
+            let facilities = await db.Facility.findAll({
                 raw: true
             });
 
             resolve({
                 errCode: 0,
                 message: 'OK',
-                users: users
+                facilities: facilities
             });
         } catch (e) {
             reject(e);
@@ -122,12 +113,11 @@ let getAllUsers = () => {
     });
 }
 
-let getUserInfoByID = (userID) => {
+let getFacilityInfoByID = (facility_id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let user = await db.Facility.findOne({
+            let facility = await db.Facility.findOne({
                 where: { facility_id: userID },
-                logging: console.log,
                 raw: true
             });
 
@@ -135,14 +125,14 @@ let getUserInfoByID = (userID) => {
                 resolve({
                     errCode: 0,
                     message: 'OK',
-                    user: user
+                    facility: facility
                 });
             }
             else {
                 resolve({
                     errCode: 1,
                     message: 'User not found',
-                    user: {}
+                    facility: {}
                 });
             }
 
@@ -153,9 +143,9 @@ let getUserInfoByID = (userID) => {
 }
 
 module.exports = {
-    userLogin: userLogin,
-    createNewUser: createNewUser,
-    updateUser: updateUser,
-    getAllUsers: getAllUsers,
-    getUserInfoByID: getUserInfoByID,
+    facilityLogin: facilityLogin,
+    createNewFacility: createNewFacility,
+    updateFacility: updateFacility,
+    getAllFacilities: getAllFacilities,
+    getFacilityInfoByID: getFacilityInfoByID,
 }

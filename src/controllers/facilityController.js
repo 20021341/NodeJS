@@ -1,4 +1,4 @@
-let userService = require('../services/userService');
+let facilityService = require('../services/facilityService');
 
 let handleLogin = async (req, res) => {
     if (!req.body.username || !req.body.password) {
@@ -8,16 +8,16 @@ let handleLogin = async (req, res) => {
         });
     }
 
-    let userData = await userService.userLogin(req.body.username, req.body.password);
+    let data = await facilityService.facilityLogin(req.body.username, req.body.password);
 
     return res.status(200).json({
-        errCode: userData.errCode,
-        message: userData.message,
-        user: userData.user ? userData.user : {},
+        errCode: data.errCode,
+        message: data.message,
+        user: data.facility ? data.facility : {},
     });
 }
 
-let handleCreateUser = async (req, res) => {
+let handleCreateFacility = async (req, res) => {
     if (!req.body.name
         || !req.body.username
         || !req.body.password
@@ -30,22 +30,23 @@ let handleCreateUser = async (req, res) => {
         });
     }
 
-    let check = await userService.createNewUser(req.body);
+    let check = await facilityService.createNewFacility(req.body);
+
     if (check) {
         return res.status(200).json({
             errCode: 0,
-            message: 'Create user success',
+            message: 'Create facility success',
         });
     } else {
         return res.status(500).json({
             errCode: 2,
-            message: 'user already exists',
+            message: 'Facility already exists',
         });
     }
 
 }
 
-let handleUpdateUser = async (req, res) => {
+let handleUpdateFacility = async (req, res) => {
     if (!req.body.name
         || !req.body.address) {
         // khong nhap du thong tin
@@ -55,22 +56,22 @@ let handleUpdateUser = async (req, res) => {
         });
     }
 
-    let check = await userService.updateUser(req.body);
+    let check = await facilityService.updateFacility(req.body);
 
     if (check) {
         return res.status(200).json({
             errCode: 0,
-            message: 'Update user success',
+            message: 'Update facility success',
         });
     } else {
         return res.status(200).json({
             errCode: 3,
-            message: 'Cannot update user',
+            message: 'Cannot update facility',
         });
     }
 }
 
-let handleGetUserByID = async (req, res) => {
+let handleGetFacilityByID = async (req, res) => {
     if (!req.query.id) {
         return res.status(500).json({
             errCode: 1,
@@ -78,28 +79,29 @@ let handleGetUserByID = async (req, res) => {
         });
     }
 
-    let userData = await userService.getUserInfoByID(req.query.id);
+    let data = await facilityService.getFacilityInfoByID(req.query.id);
 
     return res.status(200).json({
-        errCode: userData.errCode,
-        message: userData.message,
-        user: userData.user ? userData.user : {},
+        errCode: data.errCode,
+        message: data.message,
+        user: data.facility ? data.facility : {},
     });
 }
 
-let handleGetAllUsers = async (req, res) => {
-    let allUsers = await userService.getAllUsers();
+let handleGetAllFacilities = async (req, res) => {
+    let data = await facilityService.getAllUsers();
+
     return res.status(200).json({
-        errCode: allUsers.errCode,
-        message: allUsers.message,
-        user: allUsers.users ? allUsers.users : {},
+        errCode: data.errCode,
+        message: data.message,
+        user: data.facilities ? data.facilities : {},
     });
 }
 
 module.exports = {
     handleLogin: handleLogin,
-    handleCreateUser: handleCreateUser,
-    handleUpdateUser: handleUpdateUser,
-    handleGetUserByID: handleGetUserByID,
-    handleGetAllUsers: handleGetAllUsers,
+    handleCreateFacility: handleCreateFacility,
+    handleUpdateFacility: handleUpdateFacility,
+    handleGetFacilityByID: handleGetFacilityByID,
+    handleGetAllFacilities: handleGetAllFacilities,
 }
