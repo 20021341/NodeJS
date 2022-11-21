@@ -4,9 +4,14 @@ let facilityLogin = (username, password) => {
     return new Promise(async (resolve, reject) => {
         try {
             let data = {};
-            let facility = await findUsername(username);
+            let check = await findUsername(username);
 
-            if (facility) {
+            if (check) {
+                let facility = await db.Facility.findOne({
+                    where: { username: username },
+                    raw: true
+                });
+
                 if (password.localeCompare(facility.password) == 0) {
                     data.errCode = 0;
                     data.message = 'OK';
@@ -32,14 +37,13 @@ let findUsername = (username) => {
     return new Promise(async (resolve, reject) => {
         try {
             let facility = await db.Facility.findOne({
-                where: { username: username },
-                raw: true
+                where: { username: username }
             });
 
             if (facility) {
-                resolve(facility);
+                resolve(true);
             } else {
-                resolve({});
+                resolve(false);
             }
         } catch (e) {
             reject(e);
@@ -50,9 +54,9 @@ let findUsername = (username) => {
 let createNewFacility = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let facility = await checkUsername(userData.username);
+            let check = await findUsername(data.username);
 
-            if (facility) {
+            if (check) {
                 // username da ton tai
                 resolve(false);
             } else {
@@ -83,14 +87,13 @@ let updateFacility = (data) => {
                     address: data.address
                 },
                 {
-                    where: { id: data.id },
+                    where: { facility_id: data.id }
                 }
-            );
-
-            resolve(true);
+            )
+            resolve(true)
         } catch (e) {
-            resolve(false);
-            reject(e);
+            resolve(false)
+            reject(e)
         }
     });
 }

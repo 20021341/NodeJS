@@ -89,7 +89,7 @@ let handleGetFacilityByID = async (req, res) => {
 }
 
 let handleGetAllFacilities = async (req, res) => {
-    let data = await facilityService.getAllUsers();
+    let data = await facilityService.getAllFacilities();
 
     return res.status(200).json({
         errCode: data.errCode,
