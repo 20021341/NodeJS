@@ -3,7 +3,7 @@ const {
     Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class Product_Track extends Model {
+    class Products_Track extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -13,30 +13,33 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
         }
     };
-    Product_Track.init({
+    Products_Track.init({
         product_id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             references: 'products',
             referencesKey: 'product_id'
         },
+        prev_at: {
+            type: DataTypes.INTEGER,
+            references: 'facilities',
+            referencesKey: 'facility_id'
+        },
         current_at: {
             type: DataTypes.INTEGER,
-            references: 'users',
-            referencesKey: 'id'
-        },
-        next_at: {
-            type: DataTypes.INTEGER,
-            references: 'users',
-            referencesKey: 'id'
+            references: 'facilities',
+            referencesKey: 'facility_id'
         },
         status: DataTypes.STRING,
-        can_repair: DataTypes.BOOLEAN,
+        is_defective: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        }
     }, {
         sequelize,
-        modelName: 'Product_Track',
+        modelName: 'Products_Track',
         timestamps: false,
         freezeTableName: true
     });
-    return Product_Track;
+    return Products_Track;
 };

@@ -1,5 +1,5 @@
 'use strict';
-const { Model } = require('sequelize');
+const { Model, Sequelize } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
     class Product extends Model {
@@ -18,9 +18,11 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true
         },
-        model_name: DataTypes.STRING,
-        warranty_time: DataTypes.INTEGER,
-        manufacture_date: DataTypes.INTEGER,
+        product_line: DataTypes.STRING,
+        manufacture_date: {
+            type: DataTypes.DATE,
+            defaultValue: Sequelize.NOW
+        },
         manufacture_at: {
             type: DataTypes.INTEGER,
             references: 'facilties',
