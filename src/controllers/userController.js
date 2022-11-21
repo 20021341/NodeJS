@@ -94,7 +94,7 @@ let handleGetAllUsers = async (req, res) => {
         message: allUsers.message,
         user: allUsers.users ? allUsers.users : {},
     });
-
+    console.log()
 }
 
 module.exports = {
