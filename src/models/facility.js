@@ -15,13 +15,12 @@ module.exports = (sequelize, DataTypes) => {
   };
   Facility.init({
     facility_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       primaryKey: true,
-      autoIncrement: true
     },
-    name: DataTypes.STRING,
-    username: DataTypes.STRING,
     password: DataTypes.STRING,
+    facility_name: DataTypes.STRING,
+    phone_number: DataTypes.STRING,
     address: DataTypes.STRING,
     role: DataTypes.STRING,
   }, {

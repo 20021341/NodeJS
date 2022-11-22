@@ -11,7 +11,7 @@ let handleCreateProduct = async (req, res) => {
 
     let check = await productService.createProducts(req.body)
 
-    if (check) {
+    if (check.errCode == 0) {
         return res.status(200).json({
             errCode: 0,
             message: 'Create products success',
@@ -24,8 +24,9 @@ let handleCreateProduct = async (req, res) => {
     }
 }
 
+// req: product_id, source (facility_id), destination (facility_id)
 let handleRelocateProduct = async (req, res) => {
-
+    let check = await handleRelocateProduct(req.body)
 }
 
 let handleRetrieveProduct = async (req, res) => {

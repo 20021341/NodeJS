@@ -20,11 +20,6 @@ module.exports = (sequelize, DataTypes) => {
             references: 'products',
             referencesKey: 'product_id'
         },
-        prev_at: {
-            type: DataTypes.INTEGER,
-            references: 'facilities',
-            referencesKey: 'facility_id'
-        },
         current_at: {
             type: DataTypes.INTEGER,
             references: 'facilities',

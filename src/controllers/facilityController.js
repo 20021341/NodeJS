@@ -1,14 +1,14 @@
 let facilityService = require('../services/facilityService');
 
 let handleLogin = async (req, res) => {
-    if (!req.body.username || !req.body.password) {
+    if (!req.body.facility_id || !req.body.password) {
         return res.status(500).json({
             errCode: 1,
             message: 'Missing input paramters',
         });
     }
 
-    let data = await facilityService.facilityLogin(req.body.username, req.body.password);
+    let data = await facilityService.facilityLogin(req.body.facility_id, req.body.password);
 
     return res.status(200).json({
         errCode: data.errCode,
@@ -18,9 +18,9 @@ let handleLogin = async (req, res) => {
 }
 
 let handleCreateFacility = async (req, res) => {
-    if (!req.body.name
-        || !req.body.username
+    if (!req.body.facility_name
         || !req.body.password
+        || !req.body.phone_number
         || !req.body.address
         || !req.body.role) {
         // khong nhap du thong tin
@@ -30,9 +30,9 @@ let handleCreateFacility = async (req, res) => {
         });
     }
 
-    let check = await facilityService.createNewFacility(req.body);
+    let data = await facilityService.createNewFacility(req.body);
 
-    if (check) {
+    if (data.errCode === 0) {
         return res.status(200).json({
             errCode: 0,
             message: 'Create facility success',
@@ -43,11 +43,11 @@ let handleCreateFacility = async (req, res) => {
             message: 'Facility already exists',
         });
     }
-
 }
 
 let handleUpdateFacility = async (req, res) => {
-    if (!req.body.name
+    if (!req.body.facility_name
+        || !req.body.phone_number
         || !req.body.address) {
         // khong nhap du thong tin
         return res.status(500).json({
@@ -72,14 +72,14 @@ let handleUpdateFacility = async (req, res) => {
 }
 
 let handleGetFacilityByID = async (req, res) => {
-    if (!req.query.id) {
+    if (!req.query.facility_id) {
         return res.status(500).json({
             errCode: 1,
             message: 'Missing query parameters',
         });
     }
 
-    let data = await facilityService.getFacilityInfoByID(req.query.id);
+    let data = await facilityService.getFacilityInfoByID(req.query.facility_id);
 
     return res.status(200).json({
         errCode: data.errCode,

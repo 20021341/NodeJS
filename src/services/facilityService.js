@@ -1,49 +1,28 @@
 const db = require('../models/index');
 
-let facilityLogin = (username, password) => {
+let facilityLogin = (facility_id, password) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let data = {};
-            let check = await findUsername(username);
+            let data = await getFacilityInfoByID(facility_id);
 
-            if (check) {
-                let facility = await db.Facility.findOne({
-                    where: { username: username },
-                    raw: true
-                });
-
-                if (password.localeCompare(facility.password) == 0) {
-                    data.errCode = 0;
-                    data.message = 'OK';
-                    delete facility.password;
-                    data.facility = facility;
+            if (data.errCode === 0) {
+                if (password.localeCompare(data.facility.password) == 0) {
+                    resolve({
+                        errCode: 0,
+                        message: 'OK',
+                        facility: data.facility
+                    })
                 } else {
-                    data.errCode = 3;
-                    data.message = 'Wrong password';
+                    resolve({
+                        errCode: 1,
+                        message: 'Wrong password'
+                    })
                 }
             } else {
-                data.errCode = 1;
-                data.message = 'User not found!';
-            }
-
-            resolve(data);
-        } catch (e) {
-            reject(e);
-        }
-    });
-}
-
-let findUsername = (username) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let facility = await db.Facility.findOne({
-                where: { username: username }
-            });
-
-            if (facility) {
-                resolve(true);
-            } else {
-                resolve(false);
+                resolve({
+                    errCode: 2,
+                    message: 'Facility not found'
+                })
             }
         } catch (e) {
             reject(e);
@@ -53,26 +32,35 @@ let findUsername = (username) => {
 
 let createNewFacility = (data) => {
     return new Promise(async (resolve, reject) => {
-        try {
-            let check = await findUsername(data.username);
-
-            if (check) {
-                // username da ton tai
-                resolve(false);
-            } else {
-                // username chua ton tai
-                // tao user moi
-                await db.Facility.create({
-                    name: data.name,
-                    username: data.username,
-                    password: data.password,
-                    address: data.address,
-                    role: data.role
-                });
-                resolve(true);
+        let new_facility_id = ""
+        console.log(data)
+        while (true) {
+            new_facility_id = data.role + Math.floor(Math.random() * 1000).toString()
+            let facilityData = await getFacilityInfoByID(new_facility_id)
+            if (facilityData.errCode !== 0) {
+                break
             }
+        }
+
+        try {
+            await db.Facility.create({
+                facility_id: new_facility_id,
+                password: data.password,
+                facility_name: data.facility_name,
+                phone_number: data.phone_number,
+                address: data.address,
+                role: data.role
+            });
+            resolve({
+                errCode: 0,
+                message: 'OK'
+            });
 
         } catch (e) {
+            resolve({
+                errCode: 1,
+                message: 'Cannot create facility'
+            });
             reject(e);
         }
     })
@@ -83,11 +71,12 @@ let updateFacility = (data) => {
         try {
             await db.Facility.update(
                 {
-                    name: data.name,
+                    facility_name: data.facility_name,
+                    phone_number: data.phone_number,
                     address: data.address
                 },
                 {
-                    where: { facility_id: data.id }
+                    where: { facility_id: data.facility_id }
                 }
             )
             resolve(true)
@@ -134,8 +123,7 @@ let getFacilityInfoByID = (facility_id) => {
             else {
                 resolve({
                     errCode: 1,
-                    message: 'User not found',
-                    facility: {}
+                    message: 'Facility not found',
                 });
             }
 
