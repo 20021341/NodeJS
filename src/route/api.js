@@ -1,6 +1,7 @@
 const express = require('express');
 const facilityController = require('../controllers/facilityController');
-const productController = require('../controllers/productController')
+const productController = require('../controllers/productController');
+const billController = require('../controllers/billController')
 
 let router = express.Router();
 
@@ -12,7 +13,10 @@ let initAPIRoutes = (app) => {
     router.post('/create-facility', facilityController.handleCreateFacility);
     router.post('/update-facility', facilityController.handleUpdateFacility);
 
-    router.post('/create-products', productController.handleCreateProduct)
+    router.post('/create-products', productController.handleCreateProduct);
+    router.post('/relocate-product', productController.handleRelocateProduct);
+
+    router.post('/create-bill', billController.handleCreateBill)
 
     return app.use('/api', router);
 }
