@@ -69,6 +69,8 @@ let createBill = (data) => {
 
                     await db.Products_Track.update(
                         {
+                            current_at: null,
+                            owner: data.customer_id,
                             status: "Sold"
                         },
                         {
@@ -81,6 +83,7 @@ let createBill = (data) => {
                         message: 'OK'
                     })
                 } catch (e) {
+                    console.log(e)
                     resolve({
                         errCode: 3,
                         message: 'Cannot create bill'

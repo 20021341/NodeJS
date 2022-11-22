@@ -3,7 +3,7 @@ const { getFacilityInfoByID } = require('./facilityService');
 
 let createProduct = (data) => {
     return new Promise(async (resolve, reject) => {
-        let facilityData = await getFacilityInfoByID(data.facility_id)
+        let facilityData = await getFacilityInfoByID(data.factory_id)
         if (facilityData.errCode === 0) {
             if (facilityData.facility.role === "factory") {
                 /**
@@ -29,7 +29,7 @@ let createProduct = (data) => {
                         product = await db.Product.create({
                             product_id: new_product_id,
                             product_line: data.product_line,
-                            manufacture_at: data.facility_id
+                            manufacture_at: data.factory_id
                         })
 
                         await db.Products_Track.create({

@@ -25,6 +25,11 @@ module.exports = (sequelize, DataTypes) => {
             references: 'facilities',
             referencesKey: 'facility_id'
         },
+        owner: {
+            type: DataTypes.STRING,
+            references: 'customers',
+            referencesKey: 'customer_id'
+        },
         status: DataTypes.STRING,
         is_defective: {
             type: DataTypes.BOOLEAN,

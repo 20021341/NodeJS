@@ -1,6 +1,6 @@
 'use strict';
 const {
-    Model
+    Model, Sequelize
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Warranty_Card extends Model {
@@ -23,20 +23,27 @@ module.exports = (sequelize, DataTypes) => {
             references: 'products',
             referencesKey: 'product_id'
         },
-        customer_id: {
+        create_at: {
             type: DataTypes.STRING,
-            references: 'customers',
-            referencesKey: 'customer_id'
+            references: 'facilities',
+            referencesKey: 'facility_id'
         },
         maintain_at: {
             type: DataTypes.STRING,
             references: 'facilities',
             referencesKey: 'facility_id'
         },
-        create_date: DataTypes.DATE,
+        customer_id: {
+            type: DataTypes.STRING,
+            references: 'customers',
+            referencesKey: 'customer_id'
+        },
+        create_date: {
+            type: DataTypes.DATE,
+            defaultValue: Sequelize.NOW
+        },
         return_date: DataTypes.DATE,
         status: DataTypes.STRING,
-        description: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'Warranty_Card',

@@ -1,10 +1,10 @@
 let productService = require('../services/productService');
 
-//req: product_line, quantity, facility_id
+//req: product_line, quantity, factory_id
 let handleCreateProduct = async (req, res) => {
     if (!req.body.product_line
         || !req.body.quantity
-        || !req.body.facility_id) {
+        || !req.body.factory_id) {
         return res.status(500).json({
             errCode: 1,
             message: 'Missing input paramters',
