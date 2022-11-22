@@ -21,10 +21,9 @@ module.exports = (sequelize, DataTypes) => {
         image: DataTypes.STRING,
         cpu: DataTypes.STRING,
         gpu: DataTypes.STRING,
-        ram: DataTypes.INTEGER,
-        rom: DataTypes.INTEGER,
-        resolution: DataTypes.STRING,
-        screen_size: DataTypes.FLOAT,
+        ram: DataTypes.STRING,
+        memory: DataTypes.STRING,
+        display: DataTypes.STRING,
         warranty_period: DataTypes.INTEGER,
     }, {
         sequelize,

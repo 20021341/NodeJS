@@ -33,7 +33,6 @@ let facilityLogin = (facility_id, password) => {
 let createNewFacility = (data) => {
     return new Promise(async (resolve, reject) => {
         let new_facility_id = ""
-        console.log(data)
         while (true) {
             new_facility_id = data.role + Math.floor(Math.random() * 1000).toString()
             let facilityData = await getFacilityInfoByID(new_facility_id)

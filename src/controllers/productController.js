@@ -9,7 +9,7 @@ let handleCreateProduct = async (req, res) => {
         });
     }
 
-    let check = await productService.createProducts(req.body)
+    let check = await productService.createProduct(req.body)
 
     if (check.errCode == 0) {
         return res.status(200).json({
@@ -18,8 +18,8 @@ let handleCreateProduct = async (req, res) => {
         });
     } else {
         return res.status(500).json({
-            errCode: 2,
-            message: 'Some error',
+            errCode: 1,
+            message: check.message,
         });
     }
 }
