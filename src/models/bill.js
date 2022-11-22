@@ -1,9 +1,9 @@
 'use strict';
 const {
-    Model
+    Model, Sequelize
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class Warranty_Card extends Model {
+    class Bill extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -13,8 +13,8 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
         }
     };
-    Warranty_Card.init({
-        card_id: {
+    Bill.init({
+        bill_id: {
             type: DataTypes.INTEGER,
             primaryKey: true
         },
@@ -28,20 +28,19 @@ module.exports = (sequelize, DataTypes) => {
             references: 'customers',
             referencesKey: 'customer_id'
         },
-        maintain_at: {
-            type: DataTypes.STRING,
-            references: 'facilities',
-            referencesKey: 'facility_id'
+        buy_date: {
+            type: DataTypes.DATE,
+            defaultValue: Sequelize.NOW
         },
-        create_date: DataTypes.DATE,
-        return_date: DataTypes.DATE,
-        status: DataTypes.STRING,
-        description: DataTypes.STRING
+        buy_at: {
+            type: DataTypes.STRING,
+            references: 'facilties',
+            referencesKey: 'facility_id'
+        }
     }, {
         sequelize,
-        modelName: 'Warranty_Card',
+        modelName: 'Bill',
         timestamps: false,
-        freezeTableName: true
     });
-    return Warranty_Card;
+    return Bill;
 };

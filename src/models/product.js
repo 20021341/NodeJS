@@ -14,19 +14,22 @@ module.exports = (sequelize, DataTypes) => {
     };
     Product.init({
         product_id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             primaryKey: true,
-            autoIncrement: true
         },
-        product_line: DataTypes.STRING,
+        product_line: {
+            type: DataTypes.STRING,
+            references: 'product_lines',
+            referencesKey: 'product_line'
+        },
         manufacture_date: {
             type: DataTypes.DATE,
             defaultValue: Sequelize.NOW
         },
         manufacture_at: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             references: 'facilties',
-            referencesKey: 'id'
+            referencesKey: 'facility_id'
         },
     }, {
         sequelize,

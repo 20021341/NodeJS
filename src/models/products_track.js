@@ -15,13 +15,13 @@ module.exports = (sequelize, DataTypes) => {
     };
     Products_Track.init({
         product_id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             primaryKey: true,
             references: 'products',
             referencesKey: 'product_id'
         },
         current_at: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             references: 'facilities',
             referencesKey: 'facility_id'
         },
