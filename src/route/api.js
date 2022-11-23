@@ -1,14 +1,18 @@
 const express = require('express');
 const facilityController = require('../controllers/facilityController');
+const agentController = require('../controllers/agentController');
 const productController = require('../controllers/productController');
 const billController = require('../controllers/billController');
 const cardController = require('../controllers/cardController');
+
 
 let router = express.Router();
 
 let initAPIRoutes = (app) => {
     router.get('/get-facility', facilityController.handleGetFacilityByID);
     router.get('/get-all-facilities', facilityController.handleGetAllFacilities);
+
+    router.post('/agent/deliver-product', agentController.handleDeliverProduct)
 
     router.post('/login', facilityController.handleLogin);
     router.post('/create-facility', facilityController.handleCreateFacility);

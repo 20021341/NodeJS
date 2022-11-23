@@ -68,6 +68,7 @@ let createProduct = (data) => {
     })
 }
 
+// product_id, src_id, des_id
 let relocateProduct = (data) => {
     return new Promise(async (resolve, reject) => {
         let product = await db.Products_Track.findOne({

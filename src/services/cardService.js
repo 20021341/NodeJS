@@ -86,7 +86,7 @@ let createCard = (data) => {
                         create_at: data.agent_id,
                         maintain_at: data.center_id,
                         customer_id: data.customer_id,
-                        status: "Repairing"
+                        status: "Waiting to deliver"
                     })
 
                     await db.Products_Track.update(
