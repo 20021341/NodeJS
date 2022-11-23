@@ -88,13 +88,20 @@ let handleGetFacilityByID = async (req, res) => {
     });
 }
 
-let handleGetAllFacilities = async (req, res) => {
-    let data = await facilityService.getAllFacilities();
+let handleGetFacilitiesByRole = async (req, res) => {
+    if (!req.query.role) {
+        return res.status(500).json({
+            errCode: 1,
+            message: 'Missing query parameters',
+        });
+    }
+
+    let data = await facilityService.getFacilitiesByRole(req.query);
 
     return res.status(200).json({
         errCode: data.errCode,
         message: data.message,
-        user: data.facilities ? data.facilities : {},
+        user: data.facility ? data.facility : {},
     });
 }
 
@@ -103,5 +110,5 @@ module.exports = {
     handleCreateFacility: handleCreateFacility,
     handleUpdateFacility: handleUpdateFacility,
     handleGetFacilityByID: handleGetFacilityByID,
-    handleGetAllFacilities: handleGetAllFacilities,
+    handleGetFacilitiesByRole: handleGetFacilitiesByRole,
 }

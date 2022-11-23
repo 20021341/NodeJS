@@ -31,10 +31,6 @@ module.exports = (sequelize, DataTypes) => {
             referencesKey: 'customer_id'
         },
         status: DataTypes.STRING,
-        is_defective: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
-        }
     }, {
         sequelize,
         modelName: 'Products_Track',

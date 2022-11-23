@@ -1,29 +1,30 @@
 const express = require('express');
 const facilityController = require('../controllers/facilityController');
+const factoryController = require('../controllers/factoryController');
 const agentController = require('../controllers/agentController');
+const centerController = require('../controllers/centerController');
 const productController = require('../controllers/productController');
-const billController = require('../controllers/billController');
-const cardController = require('../controllers/cardController');
 
 
 let router = express.Router();
 
 let initAPIRoutes = (app) => {
     router.get('/get-facility', facilityController.handleGetFacilityByID);
-    router.get('/get-all-facilities', facilityController.handleGetAllFacilities);
+    router.get('/get-all-facilities', facilityController.handleGetFacilitiesByRole);
 
-    router.post('/agent/deliver-product', agentController.handleDeliverProduct)
+    router.post('/agent/create-bill', agentController.handleCreateBill);
+    router.post('/agent/create-card', agentController.handleCreateCard);
+    router.post('/agent/deliver-customers-product', agentController.handleDeliverCustomersProduct);
+    router.post('/agent/deliver-defective-products', agentController.handleDeliverDefectiveProducts);
+
+    router.post('/center/repair-product', centerController.handleRepairProduct);
 
     router.post('/login', facilityController.handleLogin);
     router.post('/create-facility', facilityController.handleCreateFacility);
     router.post('/update-facility', facilityController.handleUpdateFacility);
 
-    router.post('/create-products', productController.handleCreateProduct);
+    router.post('/factory/create-products', factoryController.handleCreateProduct);
     router.post('/relocate-product', productController.handleRelocateProduct);
-
-    router.post('/create-bill', billController.handleCreateBill);
-
-    router.post('/create-card', cardController.handleCreateCard);
 
     return app.use('/api', router);
 }

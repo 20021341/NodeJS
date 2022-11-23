@@ -1,10 +1,9 @@
 const db = require('../models/index')
-const Op = require('sequelize')
 const { getFacilityInfoByID } = require('./facilityService')
 const { relocateProduct } = require('./productService')
 
 // agent_id
-let deliverProductFromAgent = (data) => {
+let deliverCustomersProduct = (data) => {
     return new Promise(async (resolve, reject) => {
         let agent = await getFacilityInfoByID(data.agent_id)
 
@@ -18,7 +17,7 @@ let deliverProductFromAgent = (data) => {
                 let products = await db.Products_Track.findAll({
                     where: {
                         current_at: data.agent_id,
-                        status: ["Ready to maintain", "Defective"]
+                        status: "Ready to maintain"
                     },
                     raw: true
                 })
@@ -30,58 +29,35 @@ let deliverProductFromAgent = (data) => {
                     })
                 } else {
                     for (let i = 0; i < products.length; i++) {
-                        if (products[i].status === "Ready to maintain") {
-                            let card = await db.Warranty_Card.findOne({
-                                where: {
-                                    product_id: products[i].product_id,
-                                    status: "Waiting to deliver"
-                                },
-                                raw: true
+                        let card = await db.Warranty_Card.findOne({
+                            where: {
+                                product_id: products[i].product_id,
+                                status: "Waiting to deliver"
+                            },
+                            raw: true
+                        })
+
+                        if (!card) {
+                            resolve({
+                                errCode: 2,
+                                message: "Cannot find this product\'s warranty card"
                             })
-
-                            if (!card) {
-                                resolve({
-                                    errCode: 2,
-                                    message: "Cannot find this product\'s warranty card"
-                                })
-                            } else {
-                                let check = await relocateProduct({
-                                    product_id: products[i].product_id,
-                                    src_id: data.agent_id,
-                                    des_id: card.maintain_at
-                                })
-
-                                if (check.errCode === 0) {
-                                    await db.Warranty_Card.update(
-                                        {
-                                            status: "Repairing"
-                                        },
-                                        {
-                                            where: { card_id: card.card_id }
-                                        }
-                                    )
-                                } else {
-                                    resolve({
-                                        errCode: 2,
-                                        message: "Cannot deliver"
-                                    })
-                                }
-                            }
                         } else {
-                            let product = await db.Product.findOne({
-                                where: {
-                                    product_id: products[i].product_id,
-                                },
-                                raw: true
-                            })
-
                             let check = await relocateProduct({
                                 product_id: products[i].product_id,
-                                src_id: data.agent_id,
-                                des_id: product.manufacture_at
+                                des_id: card.maintain_at
                             })
 
-                            if (check.errCode !== 0) {
+                            if (check.errCode === 0) {
+                                await db.Warranty_Card.update(
+                                    {
+                                        status: "Repairing"
+                                    },
+                                    {
+                                        where: { card_id: card.card_id }
+                                    }
+                                )
+                            } else {
                                 resolve({
                                     errCode: 2,
                                     message: "Cannot deliver"
@@ -102,6 +78,83 @@ let deliverProductFromAgent = (data) => {
     })
 }
 
+//agent_id, center_id
+let deliverDefectiveProducts = (data) => {
+    return new Promise(async (resolve, reject) => {
+        let agent = await getFacilityInfoByID(data.agent_id)
+        let center = await getFacilityInfoByID(data.center_id)
+
+        if (agent.errCode !== 0 || agent.facility.role !== "agent") {
+            resolve({
+                errCode: 2,
+                message: 'Agent not found'
+            })
+        } else if (center.errCode !== 0 || center.facility.role !== "center") {
+            resolve({
+                errCode: 2,
+                message: 'Center not found'
+            })
+        } else {
+            let products = await db.Products_Track.findAll({
+                where: {
+                    current_at: data.agent_id,
+                    status: "Defective"
+                },
+                raw: true
+            })
+
+            if (products.length === 0) {
+                resolve({
+                    errCode: 1,
+                    message: 'No product is defective'
+                })
+            } else {
+                for (let i = 0; i < products.length; i++) {
+                    let new_card_id
+
+                    while (true) {
+                        new_card_id = Math.floor(Math.random() * 10000)
+                        let card = await db.Warranty_Card.findOne({
+                            where: { card_id: new_card_id },
+                            raw: true
+                        })
+
+                        if (!card) {
+                            break
+                        }
+                    }
+
+                    let check = await relocateProduct({
+                        product_id: products[i].product_id,
+                        des_id: data.center_id
+                    })
+
+                    if (check) {
+                        await db.Warranty_Card.create({
+                            card_id: new_card_id,
+                            product_id: products[i].product_id,
+                            create_at: data.agent_id,
+                            maintain_at: data.center_id,
+                            status: "Repairing"
+                        })
+
+                        resolve({
+                            errCode: 0,
+                            message: 'OK'
+                        })
+                    } else {
+                        resolve({
+                            errCode: 3,
+                            message: 'Cannot deliver'
+                        })
+                    }
+                }
+            }
+        }
+    })
+}
+
 module.exports = {
-    deliverProductFromAgent: deliverProductFromAgent
+    deliverCustomersProduct: deliverCustomersProduct,
+    deliverDefectiveProducts: deliverDefectiveProducts
 }

@@ -1,6 +1,7 @@
 const db = require('../models/index');
 const customerService = require('./customerService');
 
+// product_id, agent_id, customer_id, fullname, phone_number
 let createBill = (data) => {
     return new Promise(async (resolve, reject) => {
         let product = await db.Products_Track.findOne({
@@ -9,7 +10,7 @@ let createBill = (data) => {
         })
 
         let agent = await db.Facility.findOne({
-            where: { facility_id: data.facility_id },
+            where: { facility_id: data.agent_id },
             raw: true
         })
 
@@ -22,6 +23,11 @@ let createBill = (data) => {
             resolve({
                 errCode: 2,
                 message: 'Agent not found'
+            })
+        } else if (product.current_at !== data.agent_id) {
+            resolve({
+                errCode: 3,
+                message: "This agent does not have the product u want"
             })
         } else {
             let customer = await db.Customer.findOne({
@@ -64,7 +70,7 @@ let createBill = (data) => {
                         bill_id: new_bill_id,
                         product_id: data.product_id,
                         customer_id: data.customer_id,
-                        buy_at: data.facility_id
+                        buy_at: data.agent_id
                     })
 
                     await db.Products_Track.update(

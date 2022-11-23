@@ -68,11 +68,13 @@ let createProduct = (data) => {
     })
 }
 
-// product_id, src_id, des_id
+// product_id, des_id
 let relocateProduct = (data) => {
     return new Promise(async (resolve, reject) => {
         let product = await db.Products_Track.findOne({
-            where: { product_id: data.product_id },
+            where: {
+                product_id: data.product_id,
+            },
             raw: true
         })
 
@@ -82,7 +84,7 @@ let relocateProduct = (data) => {
              */
             resolve({
                 errCode: 3,
-                message: "Product not exists"
+                message: "Product not found"
             })
         } else {
             /**
@@ -110,16 +112,16 @@ let relocateProduct = (data) => {
                     newStatus = "Ready to sell"
                 }
 
-                if ((src.facility.role === "agent" || src.facility.role === "center") && des.facility.role === "factory") {
-                    newStatus = "Need to be recycled"
-                }
-
                 if (src.facility.role === "agent" && des.facility.role === "center") {
-                    newStatus = "Need to be repaired"
+                    newStatus = "Repairing"
                 }
 
                 if (src.facility.role === "center" && des.facility.role === "agent") {
                     newStatus = "Repair done"
+                }
+
+                if (src.facility.role === "center" && des.facility.role === "factory") {
+                    newStatus = "Need to be recycled"
                 }
 
                 if (newStatus === "") {

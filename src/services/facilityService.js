@@ -86,10 +86,13 @@ let updateFacility = (data) => {
     });
 }
 
-let getAllFacilities = () => {
+let getFacilitiesByRole = (query) => {
     return new Promise(async (resolve, reject) => {
         try {
             let facilities = await db.Facility.findAll({
+                where: {
+                    role: query.role
+                },
                 raw: true
             });
 
@@ -136,6 +139,6 @@ module.exports = {
     facilityLogin: facilityLogin,
     createNewFacility: createNewFacility,
     updateFacility: updateFacility,
-    getAllFacilities: getAllFacilities,
+    getFacilitiesByRole: getFacilitiesByRole,
     getFacilityInfoByID: getFacilityInfoByID,
 }
