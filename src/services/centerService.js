@@ -55,7 +55,7 @@ let repairProduct = (data) => {
                         })
 
                         if (check.errCode === 0) {
-                            if (card.customer_id !== undefined) {
+                            if (card.customer_id !== null) {
                                 await db.Warranty_Card.update(
                                     {
                                         status: "Done"
@@ -68,6 +68,15 @@ let repairProduct = (data) => {
                                 await db.Warranty_Card.destroy({
                                     where: { card_id: card.card_id }
                                 })
+
+                                await db.Products_Track.update(
+                                    {
+                                        status: "Ready to sell"
+                                    },
+                                    {
+                                        where: { product_id: data.product_id }
+                                    }
+                                )
                             }
 
                             resolve({

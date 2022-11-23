@@ -1,16 +1,15 @@
 const express = require('express');
-const facilityController = require('../controllers/facilityController');
+const headquarterController = require('../controllers/headquarterController');
 const factoryController = require('../controllers/factoryController');
 const agentController = require('../controllers/agentController');
 const centerController = require('../controllers/centerController');
-const productController = require('../controllers/productController');
 
 
 let router = express.Router();
 
 let initAPIRoutes = (app) => {
-    router.get('/get-facility', facilityController.handleGetFacilityByID);
-    router.get('/get-all-facilities', facilityController.handleGetFacilitiesByRole);
+    router.get('/get-facility', headquarterController.handleGetFacilityByID);
+    router.get('/get-all-facilities', headquarterController.handleGetFacilitiesByRole);
 
     router.post('/agent/create-bill', agentController.handleCreateBill);
     router.post('/agent/create-card', agentController.handleCreateCard);
@@ -19,12 +18,13 @@ let initAPIRoutes = (app) => {
 
     router.post('/center/repair-product', centerController.handleRepairProduct);
 
-    router.post('/login', facilityController.handleLogin);
-    router.post('/create-facility', facilityController.handleCreateFacility);
-    router.post('/update-facility', facilityController.handleUpdateFacility);
+    router.post('/login', headquarterController.handleLogin);
+    router.post('/create-facility', headquarterController.handleCreateFacility);
+    router.post('/update-facility', headquarterController.handleUpdateFacility);
 
     router.post('/factory/create-products', factoryController.handleCreateProduct);
-    router.post('/relocate-product', productController.handleRelocateProduct);
+    router.post('/factory/deliver-products', factoryController.handleDeliverProducts);
+    router.post('/factory/recycle-products', factoryController.handleRecycleProducts);
 
     return app.use('/api', router);
 }
