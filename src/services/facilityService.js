@@ -1,36 +1,6 @@
 const db = require('../models/index');
 
-let facilityLogin = (facility_id, password) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let data = await getFacilityInfoByID(facility_id);
-
-            if (data.errCode === 0) {
-                if (password.localeCompare(data.facility.password) == 0) {
-                    resolve({
-                        errCode: 0,
-                        message: 'OK',
-                        facility: data.facility
-                    })
-                } else {
-                    resolve({
-                        errCode: 1,
-                        message: 'Wrong password'
-                    })
-                }
-            } else {
-                resolve({
-                    errCode: 2,
-                    message: 'Facility not found'
-                })
-            }
-        } catch (e) {
-            reject(e);
-        }
-    });
-}
-
-let createNewFacility = (data) => {
+let createFacility = (data) => {
     return new Promise(async (resolve, reject) => {
         let new_facility_id = ""
         while (true) {
@@ -44,7 +14,7 @@ let createNewFacility = (data) => {
         try {
             await db.Facility.create({
                 facility_id: new_facility_id,
-                password: data.password,
+                password: "123456",
                 facility_name: data.facility_name,
                 phone_number: data.phone_number,
                 address: data.address,
@@ -63,48 +33,6 @@ let createNewFacility = (data) => {
             reject(e);
         }
     })
-}
-
-let updateFacility = (data) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            await db.Facility.update(
-                {
-                    facility_name: data.facility_name,
-                    phone_number: data.phone_number,
-                    address: data.address
-                },
-                {
-                    where: { facility_id: data.facility_id }
-                }
-            )
-            resolve(true)
-        } catch (e) {
-            resolve(false)
-            reject(e)
-        }
-    });
-}
-
-let getFacilitiesByRole = (query) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let facilities = await db.Facility.findAll({
-                where: {
-                    role: query.role
-                },
-                raw: true
-            });
-
-            resolve({
-                errCode: 0,
-                message: 'OK',
-                facilities: facilities
-            });
-        } catch (e) {
-            reject(e);
-        }
-    });
 }
 
 let getFacilityInfoByID = (facility_id) => {
@@ -135,10 +63,29 @@ let getFacilityInfoByID = (facility_id) => {
     });
 }
 
+let getAllFacilities = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let facilities = await db.Facility.findAll({
+                raw: true
+            });
+
+            resolve({
+                errCode: 0,
+                message: 'OK',
+                facilities: facilities
+            })
+        } catch (e) {
+            resolve({
+                errCode: 1,
+                message: 'Some mysql error',
+            })
+        }
+    })
+}
+
 module.exports = {
-    facilityLogin: facilityLogin,
-    createNewFacility: createNewFacility,
-    updateFacility: updateFacility,
-    getFacilitiesByRole: getFacilitiesByRole,
+    createFacility: createFacility,
     getFacilityInfoByID: getFacilityInfoByID,
+    getAllFacilities: getAllFacilities,
 }

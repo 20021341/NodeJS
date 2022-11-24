@@ -3,7 +3,7 @@ const { getFacilityInfoByID } = require('./facilityService')
 const { relocateProduct } = require('./productService')
 
 // agent_id
-let deliverCustomersProduct = (data) => {
+let deliverCustomersProducts = (data) => {
     return new Promise(async (resolve, reject) => {
         let agent = await getFacilityInfoByID(data.agent_id)
 
@@ -155,6 +155,6 @@ let deliverDefectiveProducts = (data) => {
 }
 
 module.exports = {
-    deliverCustomersProduct: deliverCustomersProduct,
+    deliverCustomersProducts: deliverCustomersProducts,
     deliverDefectiveProducts: deliverDefectiveProducts
 }

@@ -1,12 +1,24 @@
+const { sequelize } = require('../models/index');
 const db = require('../models/index');
 
 // product_id, agent_id, center_id, customer_id
 let createCard = (data) => {
     return new Promise(async (resolve, reject) => {
-        let product_track = await db.Products_Track.findOne({
-            where: { product_id: data.product_id },
-            raw: true
-        })
+        /**
+         * product = {result, metadata}
+         * so product we need is product[0]
+         */
+        let product = await sequelize.query(
+            'SELECT products_track.*, product_lines.warranty_period FROM products JOIN product_lines ON products.product_line = product_lines.product_line JOIN products_track ON products.product_id = products_track.product_id WHERE products_track.product_id = :product_id AND products_track.status = :status',
+            {
+                replacements: {
+                    product_id: data.product_id,
+                    status: "Sold",
+                    type: sequelize.QueryTypes.SELECT
+                },
+                raw: true
+            }
+        )
 
         let agent = await db.Facility.findOne({
             where: { facility_id: data.agent_id },
@@ -28,7 +40,8 @@ let createCard = (data) => {
             raw: true
         })
 
-        if (!product_track || product_track.status !== "Sold") {
+        // expect 1
+        if (product[0].length === 0) {
             resolve({
                 errCode: 1,
                 message: 'Product not found or product has not been sold yet'
@@ -54,6 +67,11 @@ let createCard = (data) => {
                 message: 'Bill not found'
             })
         } else {
+            let now = new Date()
+            let buy_date = Date.parse(bill.buy_date)
+            let diff = Math.abs(buy_date - now)
+            diff = Math.floor(diff / 2629746000)
+
             if (bill.customer_id !== data.customer_id) {
                 resolve({
                     errCode: 3,
@@ -63,6 +81,11 @@ let createCard = (data) => {
                 resolve({
                     errCode: 4,
                     message: 'Please bring ur product to where u bought it'
+                })
+            } else if (diff > product[0][0].warranty_period) {
+                resolve({
+                    errCode: 5,
+                    message: 'Your product is expired'
                 })
             } else {
                 let new_card_id

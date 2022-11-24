@@ -14,7 +14,7 @@ let deliverProducts = (data) => {
          * so products we need is products[0]
          */
         let products = await sequelize.query(
-            'SELECT products_track.product_id AS `product_id` FROM products_track JOIN products ON products_track.product_id = products.product_id WHERE current_at = :current_at AND product_line = :product_line AND status = :status',
+            'SELECT products_track.* FROM products_track JOIN products ON products_track.product_id = products.product_id WHERE current_at = :current_at AND product_line = :product_line AND status = :status',
             {
                 replacements: {
                     current_at: data.factory_id,
@@ -48,18 +48,18 @@ let deliverProducts = (data) => {
                     des_id: data.agent_id
                 })
 
-                if (check.errCode === 0) {
-                    resolve({
-                        errCode: 0,
-                        message: 'OK'
-                    })
-                } else {
+                if (check.errCode !== 0) {
                     resolve({
                         errCode: 3,
                         message: 'Some mysql error'
                     })
                 }
             }
+
+            resolve({
+                errCode: 0,
+                message: 'OK'
+            })
         }
     })
 }
@@ -83,7 +83,7 @@ let recycleProducts = (data) => {
                     {
                         where: {
                             current_at: data.factory_id,
-                            status: "Need to be recycled"
+                            status: ["Need to be recycled", "Defective"]
                         }
                     }
                 )
@@ -102,7 +102,62 @@ let recycleProducts = (data) => {
     })
 }
 
+// factory_id, product_line
+let announceDefectiveProductLine = (data) => {
+    return new Promise(async (resolve, reject) => {
+        /**
+         * products = {result, metadata}
+         * so products we need is products[0]
+         */
+        let products = await sequelize.query(
+            'SELECT products_track.* FROM products_track JOIN products ON products_track.product_id = products.product_id WHERE product_line = :product_line',
+            {
+                replacements: {
+                    product_line: data.product_line,
+                    type: sequelize.QueryTypes.SELECT
+                },
+                raw: true
+            }
+        )
+
+        if (products[0].length === 0) {
+            resolve({
+                errCode: 2,
+                message: 'None of this product line has been produced'
+            })
+        } else {
+            try {
+                for (let i = 0; i < products[0].length; i++) {
+                    if (products[0][i].status === "Ready to deliver"
+                        || products[0][i].status === "Ready to sell"
+                        || products[0][i].status === "Sold") {
+                        await db.Products_Track.update(
+                            {
+                                status: "Defective"
+                            },
+                            {
+                                where: { product_id: products[0][i].product_id }
+                            }
+                        )
+                    }
+                }
+            } catch (e) {
+                resolve({
+                    errCode: 3,
+                    message: 'Some mysql error'
+                })
+            }
+
+            resolve({
+                errCode: 0,
+                message: 'OK'
+            })
+        }
+    })
+}
+
 module.exports = {
     deliverProducts: deliverProducts,
-    recycleProducts: recycleProducts
+    recycleProducts: recycleProducts,
+    announceDefectiveProductLine: announceDefectiveProductLine
 }

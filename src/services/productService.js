@@ -1,58 +1,64 @@
+const { sequelize } = require('../models/index');
 const db = require('../models/index');
 const { getFacilityInfoByID } = require('./facilityService');
 
 let createProduct = (data) => {
     return new Promise(async (resolve, reject) => {
         let facilityData = await getFacilityInfoByID(data.factory_id)
+        let product_line = await db.Product_Line.findOne({
+            where: { product_line: data.product_line },
+            raw: true
+        })
         if (facilityData.errCode === 0) {
             if (facilityData.facility.role === "factory") {
-                /**
-                 * Begin create products
-                 */
-                try {
-                    for (let i = 0; i < data.quantity; i++) {
-                        let new_product_id
-                        let product
-
-                        while (true) {
-                            new_product_id = data.product_line + Math.floor(Math.random() * 1000).toString()
-                            let productData = await db.Product.findOne({
-                                where: { product_id: new_product_id },
-                                raw: true
-                            })
-
-                            if (!productData) {
-                                break
-                            }
-                        }
-
-                        product = await db.Product.create({
-                            product_id: new_product_id,
-                            product_line: data.product_line,
-                            manufacture_at: data.factory_id
-                        })
-
-                        await db.Products_Track.create({
-                            product_id: product.product_id,
-                            current_at: product.manufacture_at,
-                            status: "Ready to deliver"
-                        })
-
-                        resolve({
-                            errCode: 0,
-                            message: 'OK'
-                        })
-                    }
-                } catch (e) {
+                if (!product_line) {
                     resolve({
                         errCode: 3,
-                        message: "Something wrong"
+                        message: 'Product line not exists'
                     })
-                    console.log(e)
+                } else {
+                    try {
+                        for (let i = 0; i < data.quantity; i++) {
+                            let new_product_id
+                            let product
+
+                            while (true) {
+                                new_product_id = data.product_line + Math.floor(Math.random() * 1000).toString()
+                                let productData = await db.Product.findOne({
+                                    where: { product_id: new_product_id },
+                                    raw: true
+                                })
+
+                                if (!productData) {
+                                    break
+                                }
+                            }
+
+                            product = await db.Product.create({
+                                product_id: new_product_id,
+                                product_line: data.product_line,
+                                manufacture_at: data.factory_id
+                            })
+
+                            await db.Products_Track.create({
+                                product_id: product.product_id,
+                                current_at: product.manufacture_at,
+                                status: "Ready to deliver"
+                            })
+
+                            resolve({
+                                errCode: 0,
+                                message: 'OK'
+                            })
+                        }
+                    } catch (e) {
+                        resolve({
+                            errCode: 3,
+                            message: "Some mysql error"
+                        })
+                        console.log(e)
+                    }
                 }
-                /**
-                 * End create products
-                 */
             } else {
                 resolve({
                     errCode: 2,
@@ -165,8 +171,91 @@ let relocateProduct = (data) => {
     })
 }
 
+// facility_id
+let getNewProducts = (data) => {
+    return new Promise(async (resolve, reject) => {
+        let facilityData = await getFacilityInfoByID(data.facility_id)
+
+        if (facilityData.errCode !== 0) {
+            resolve({
+                errCode: 1,
+                message: 'Facility not found'
+            })
+        } else if (facilityData.facility.role === "center") {
+            resolve({
+                errCode: 1,
+                message: 'Only factory and agent has working products, center does not'
+            })
+        } else {
+            let products = await sequelize.query(
+                'SELECT product_lines.product_line, SUM(IF(status IN (:status1, :status2) AND current_at = :facility_id, 1, 0)) AS quantity ' +
+                'FROM products JOIN products_track ON products.product_id = products_track.product_id ' +
+                'RIGHT JOIN product_lines ON products.product_line = product_lines.product_line ' +
+                'GROUP BY product_lines.product_line',
+                {
+                    replacements: {
+                        facility_id: data.facility_id,
+                        status1: "Ready to deliver",
+                        status2: "Ready to sell",
+                        type: sequelize.QueryTypes.SELECT
+                    },
+                    raw: true
+                }
+            )
+
+            if (products[0].length === 0) {
+                resolve({
+                    errCode: 2,
+                    message: 'This facility has no working products'
+                })
+            } else {
+                resolve({
+                    errCode: 0,
+                    message: 'OK',
+                    products: products[0]
+                })
+            }
+        }
+    })
+}
+
+// facility_id
+let getNeedActionProducts = (data) => {
+    return new Promise(async (resolve, reject) => {
+        let facilityData = await getFacilityInfoByID(data.facility_id)
+
+        if (facilityData.errCode !== 0) {
+            resolve({
+                errCode: 1,
+                message: 'Facility not found'
+            })
+        } else {
+            let products = await db.Products_Track.findAll({
+                where: {
+                    current_at: data.facility_id,
+                    status: ['Need to be recycled', 'Defective', 'Ready to maintain', 'Repairing']
+                }
+            })
+
+            if (products.length === 0) {
+                resolve({
+                    errCode: 2,
+                    message: 'No products need action'
+                })
+            } else {
+                resolve({
+                    errCode: 0,
+                    message: 'OK',
+                    products: products
+                })
+            }
+        }
+    })
+}
 
 module.exports = {
     createProduct: createProduct,
-    relocateProduct: relocateProduct
+    relocateProduct: relocateProduct,
+    getNewProducts: getNewProducts,
+    getNeedActionProducts: getNeedActionProducts,
 }

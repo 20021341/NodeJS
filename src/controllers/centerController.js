@@ -25,5 +25,5 @@ let handleRepairProduct = async (req, res) => {
 }
 
 module.exports = {
-    handleRepairProduct: handleRepairProduct
+    handleRepairProduct: handleRepairProduct,
 }

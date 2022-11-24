@@ -28,8 +28,10 @@ let handleCreateCard = async (req, res) => {
     }
 }
 
+// product_line, quantity, agent_id, customer_id, fullname, phone_number
 let handleCreateBill = async (req, res) => {
-    if (!req.body.product_id
+    if (!req.body.product_line
+        || !req.body.quantity
         || !req.body.agent_id
         || !req.body.customer_id
         || !req.body.fullname
@@ -56,7 +58,7 @@ let handleCreateBill = async (req, res) => {
 }
 
 // agent_id
-let handleDeliverCustomersProduct = async (req, res) => {
+let handleDeliverCustomersProducts = async (req, res) => {
     if (!req.body.agent_id) {
         return res.status(500).json({
             errCode: 1,
@@ -64,7 +66,7 @@ let handleDeliverCustomersProduct = async (req, res) => {
         });
     }
 
-    let check = await agentService.deliverCustomersProduct(req.body)
+    let check = await agentService.deliverCustomersProducts(req.body)
 
     if (check.errCode == 0) {
         return res.status(200).json({
@@ -104,9 +106,10 @@ let handleDeliverDefectiveProducts = async (req, res) => {
     }
 }
 
+
 module.exports = {
-    handleDeliverCustomersProduct: handleDeliverCustomersProduct,
+    handleDeliverCustomersProducts: handleDeliverCustomersProducts,
     handleDeliverDefectiveProducts: handleDeliverDefectiveProducts,
     handleCreateBill: handleCreateBill,
-    handleCreateCard: handleCreateCard
+    handleCreateCard: handleCreateCard,
 }

@@ -78,8 +78,33 @@ let handleRecycleProducts = async (req, res) => {
     }
 }
 
+// factory_id, product_line
+let handleAnnounceDefectiveProductLine = async (req, res) => {
+    if (!req.body.product_line) {
+        return res.status(500).json({
+            errCode: 1,
+            message: 'Missing input paramters',
+        });
+    }
+
+    let check = await factoryService.announceDefectiveProductLine(req.body)
+
+    if (check.errCode == 0) {
+        return res.status(200).json({
+            errCode: 0,
+            message: 'Announce defective success',
+        });
+    } else {
+        return res.status(500).json({
+            errCode: 1,
+            message: check.message,
+        });
+    }
+}
+
 module.exports = {
     handleCreateProduct: handleCreateProduct,
     handleDeliverProducts: handleDeliverProducts,
     handleRecycleProducts: handleRecycleProducts,
+    handleAnnounceDefectiveProductLine: handleAnnounceDefectiveProductLine,
 }
