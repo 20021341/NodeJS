@@ -111,6 +111,32 @@ let createBill = (data) => {
     })
 }
 
+// agent_id
+let getBillsByAgentID = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let bills = await db.Bill.findAll({
+                where: {
+                    buy_at: data.agent_id
+                },
+                raw: true
+            })
+
+            resolve({
+                errCode: 0,
+                message: 'OK',
+                bills: bills
+            })
+        } catch {
+            resolve({
+                errCode: 1,
+                message: 'Some mysql error'
+            })
+        }
+    })
+}
+
 module.exports = {
-    createBill: createBill
+    createBill: createBill,
+    getBillsByAgentID: getBillsByAgentID
 }

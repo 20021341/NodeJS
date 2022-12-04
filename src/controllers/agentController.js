@@ -106,10 +106,60 @@ let handleDeliverDefectiveProducts = async (req, res) => {
     }
 }
 
+let handleGetBillsByAgentID = async (req, res) => {
+    if (!req.query.agent_id) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing input paramters',
+        });
+    }
+
+    let data = await billService.getBillsByAgentID(req.query)
+
+    if (data.errCode == 0) {
+        return res.status(200).json({
+            errCode: 0,
+            message: 'OK',
+            bills: data.bills
+        });
+    } else {
+        return res.status(200).json({
+            errCode: 1,
+            message: data.message,
+        });
+    }
+}
+
+let handleGetCardsByAgentID = async (req, res) => {
+    if (!req.query.agent_id) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing input paramters',
+        });
+    }
+
+    let data = await cardService.getCardsByAgentID(req.query)
+
+    if (data.errCode == 0) {
+        return res.status(200).json({
+            errCode: 0,
+            message: 'OK',
+            cards: data.cards
+        });
+    } else {
+        return res.status(200).json({
+            errCode: 1,
+            message: data.message,
+        });
+    }
+}
+
 
 module.exports = {
     handleDeliverCustomersProducts: handleDeliverCustomersProducts,
     handleDeliverDefectiveProducts: handleDeliverDefectiveProducts,
     handleCreateBill: handleCreateBill,
     handleCreateCard: handleCreateCard,
+    handleGetBillsByAgentID: handleGetBillsByAgentID,
+    handleGetCardsByAgentID: handleGetCardsByAgentID
 }

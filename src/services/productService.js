@@ -234,7 +234,7 @@ let getNeedActionProducts = (data) => {
                 let products = await db.Products_Track.findAll({
                     where: {
                         current_at: data.facility_id,
-                        status: ['Defective', 'Ready to maintain']
+                        status: ['Defective', 'Waiting to deliver']
                     },
                     raw: true
                 })
@@ -247,21 +247,7 @@ let getNeedActionProducts = (data) => {
                 } else {
                     for (let i = 0; i < products.length; i++) {
                         if (products[i].status === 'Defective') {
-                            let productInfo = await db.Product.findOne({
-                                where: {
-                                    product_id: products[i].product_id
-                                },
-                                raw: true
-                            })
-
-                            let facility = await db.Facility.findOne({
-                                where: {
-                                    facility_id: productInfo.manufacture_at
-                                },
-                                raw: true
-                            })
-
-                            products[i].status = 'Sản phẩm bị lỗi, cần chuyển đến ' + facility.facility_name
+                            products[i].status = 'Sản phẩm bị lỗi, cần chuyển đến trung tâm bảo hành để sủa chữa'
                         } else {
                             let card = await db.Warranty_Card.findOne({
                                 where: {
@@ -270,14 +256,14 @@ let getNeedActionProducts = (data) => {
                                 raw: true
                             })
 
-                            let facility = await db.Facility.findOne({
+                            let center = await db.Facility.findOne({
                                 where: {
                                     facility_id: card.maintain_at
                                 },
                                 raw: true
                             })
 
-                            products[i].status = 'Sản phẩm cần bảo hành, cần chuyển đến ' + facility.facility_name
+                            products[i].status = 'Sản phẩm cần bảo hành, cần chuyển đến ' + center.facility_name
                         }
                     }
 
@@ -291,7 +277,7 @@ let getNeedActionProducts = (data) => {
                 let products = await db.Products_Track.findAll({
                     where: {
                         current_at: data.facility_id,
-                        status: ['Need to be recycled', 'Repairing']
+                        status: ['Need to be recycled', 'Repairing', 'Defective']
                     },
                     raw: true
                 })

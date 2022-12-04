@@ -17,7 +17,7 @@ let deliverCustomersProducts = (data) => {
                 let products = await db.Products_Track.findAll({
                     where: {
                         current_at: data.agent_id,
-                        status: "Ready to maintain"
+                        status: "Waiting to deliver"
                     },
                     raw: true
                 })

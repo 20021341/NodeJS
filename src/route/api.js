@@ -90,6 +90,12 @@ let initAPIRoutes = (app) => {
     // output: OK message, otherwise some errors
     router.post('/agent/deliver-defective-products', agentController.handleDeliverDefectiveProducts);
 
+    // Get bills created at this agent
+    router.get('/agent/get-bills-by-agent-id', agentController.handleGetBillsByAgentID)
+
+    // Get cards created at this agent
+    router.get('/agent/get-cards-by-agent-id', agentController.handleGetCardsByAgentID)
+
 
     /**
      * Maintainance center API

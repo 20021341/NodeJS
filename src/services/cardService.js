@@ -114,7 +114,7 @@ let createCard = (data) => {
                     await db.Products_Track.update(
                         {
                             current_at: data.agent_id,
-                            status: "Ready to maintain"
+                            status: "Waiting to deliver"
                         },
                         {
                             where: { product_id: data.product_id }
@@ -137,6 +137,43 @@ let createCard = (data) => {
     })
 }
 
+// agent_id
+let getCardsByAgentID = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let cards = await db.Warranty_Card.findAll({
+                where: {
+                    create_at: data.agent_id
+                },
+                raw: true
+            })
+
+            for (let i = 0; i < cards.length; i++) {
+                let center = await db.Facility.findOne({
+                    where: {
+                        facility_id: cards[i].maintain_at
+                    },
+                    raw: true
+                })
+
+                cards[i].maintain_at = center.facility_name
+            }
+
+            resolve({
+                errCode: 0,
+                message: 'OK',
+                cards: cards
+            })
+        } catch {
+            resolve({
+                errCode: 1,
+                message: 'Some mysql error'
+            })
+        }
+    })
+}
+
 module.exports = {
-    createCard: createCard
+    createCard: createCard,
+    getCardsByAgentID: getCardsByAgentID
 }
