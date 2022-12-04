@@ -2,7 +2,7 @@ let homeService = require('../services/homeService');
 
 let handleLogin = async (req, res) => {
     if (!req.body.facility_id || !req.body.password) {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: 'Missing input paramters',
         });
@@ -17,7 +17,7 @@ let handleLogin = async (req, res) => {
             facility: data.facility
         });
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: data.message,
         });

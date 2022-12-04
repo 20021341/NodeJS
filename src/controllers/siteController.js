@@ -3,7 +3,7 @@ let productService = require('../services/productService');
 // facility_id
 let handleGetNewProducts = async (req, res) => {
     if (!req.query.facility_id) {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: 'Missing input paramters',
         });
@@ -18,7 +18,7 @@ let handleGetNewProducts = async (req, res) => {
             products: data.products
         });
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: data.message,
         });
@@ -28,7 +28,7 @@ let handleGetNewProducts = async (req, res) => {
 // facility_id
 let handleGetNeedActionProducts = async (req, res) => {
     if (!req.query.facility_id) {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: 'Missing input paramters',
         });
@@ -43,7 +43,31 @@ let handleGetNeedActionProducts = async (req, res) => {
             products: data.products
         });
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
+            errCode: 1,
+            message: data.message,
+        });
+    }
+}
+
+let handleGetProductsOfCustomer = async (req, res) => {
+    if (!req.query.customer_id) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing input paramters',
+        });
+    }
+
+    let data = await productService.getProductsOfCustomer(req.query.customer_id);
+
+    if (data.errCode === 0) {
+        return res.status(200).json({
+            errCode: 0,
+            message: 'OK',
+            products: data.products
+        });
+    } else {
+        return res.status(200).json({
             errCode: 1,
             message: data.message,
         });
@@ -53,4 +77,5 @@ let handleGetNeedActionProducts = async (req, res) => {
 module.exports = {
     handleGetNewProducts: handleGetNewProducts,
     handleGetNeedActionProducts: handleGetNeedActionProducts,
+    handleGetProductsOfCustomer: handleGetProductsOfCustomer
 }

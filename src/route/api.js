@@ -34,6 +34,11 @@ let initAPIRoutes = (app) => {
     // output: products 
     router.get('/get-need-action-products', siteController.handleGetNeedActionProducts);
 
+    // Get products of customer
+    // input: customer_id       
+    // output: products 
+    router.get('/get-products-of-customer', siteController.handleGetProductsOfCustomer);
+
 
     /**
      * Headquarter API
@@ -43,6 +48,16 @@ let initAPIRoutes = (app) => {
     // input: none           
     // output: facilities with OK message, otherwise some errors
     router.get('/hq/get-all-facilities', headquarterController.handleGetAllFacilities);
+
+    // Get all facilities
+    // input: none           
+    // output: facilities with OK message, otherwise some errors
+    router.get('/hq/get-facilities-by-role', headquarterController.handleGetAllFacilitiesByRole);
+
+    // Get all customers
+    // input: none           
+    // output: customers with OK message, otherwise some errors
+    router.get('/hq/get-all-customers', headquarterController.handleGetAllCustomers);
 
     // Create a new facility
     // input: facility_name, phone_number, address, role         

@@ -36,6 +36,28 @@ let createCustomer = (data) => {
     })
 }
 
+let getAllCustomers = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let customers = await db.Customer.findAll({
+                raw: true
+            })
+
+            resolve({
+                errCode: 0,
+                message: 'OK',
+                customers: customers
+            })
+        } catch (e) {
+            resolve({
+                errCode: 1,
+                message: 'Some mysql error',
+            })
+        }
+    })
+}
+
 module.exports = {
-    createCustomer: createCustomer
+    createCustomer: createCustomer,
+    getAllCustomers: getAllCustomers
 }

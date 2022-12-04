@@ -7,7 +7,7 @@ let handleCreateCard = async (req, res) => {
         || !req.body.agent_id
         || !req.body.center_id
         || !req.body.customer_id) {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: 'Missing input paramters',
         });
@@ -21,7 +21,7 @@ let handleCreateCard = async (req, res) => {
             message: 'Create card success',
         });
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: check.message,
         });
@@ -36,7 +36,7 @@ let handleCreateBill = async (req, res) => {
         || !req.body.customer_id
         || !req.body.fullname
         || !req.body.phone_number) {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: 'Missing input paramters',
         });
@@ -50,7 +50,7 @@ let handleCreateBill = async (req, res) => {
             message: 'Create bill success',
         });
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: check.message,
         });
@@ -60,7 +60,7 @@ let handleCreateBill = async (req, res) => {
 // agent_id
 let handleDeliverCustomersProducts = async (req, res) => {
     if (!req.body.agent_id) {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: 'Missing input paramters',
         });
@@ -74,7 +74,7 @@ let handleDeliverCustomersProducts = async (req, res) => {
             message: 'Deliver success',
         });
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: check.message,
         });
@@ -85,7 +85,7 @@ let handleDeliverCustomersProducts = async (req, res) => {
 let handleDeliverDefectiveProducts = async (req, res) => {
     if (!req.body.agent_id
         || !req.body.center_id) {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: 'Missing input paramters',
         });
@@ -99,7 +99,7 @@ let handleDeliverDefectiveProducts = async (req, res) => {
             message: 'Deliver success',
         });
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: check.message,
         });

@@ -9,11 +9,10 @@ let createCard = (data) => {
          * so product we need is product[0]
          */
         let product = await sequelize.query(
-            'SELECT products_track.*, product_lines.warranty_period FROM products JOIN product_lines ON products.product_line = product_lines.product_line JOIN products_track ON products.product_id = products_track.product_id WHERE products_track.product_id = :product_id AND products_track.status = :status',
+            'SELECT products_track.*, product_lines.warranty_period FROM products JOIN product_lines ON products.product_line = product_lines.product_line JOIN products_track ON products.product_id = products_track.product_id WHERE products_track.product_id = :product_id AND products_track.current_at IS NULL',
             {
                 replacements: {
                     product_id: data.product_id,
-                    status: "Sold",
                     type: sequelize.QueryTypes.SELECT
                 },
                 raw: true

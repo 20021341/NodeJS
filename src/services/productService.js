@@ -230,23 +230,122 @@ let getNeedActionProducts = (data) => {
                 message: 'Facility not found'
             })
         } else {
-            let products = await db.Products_Track.findAll({
-                where: {
-                    current_at: data.facility_id,
-                    status: ['Need to be recycled', 'Defective', 'Ready to maintain', 'Repairing']
-                }
-            })
-
-            if (products.length === 0) {
-                resolve({
-                    errCode: 2,
-                    message: 'No products need action'
+            if (facilityData.facility.role === 'agent') {
+                let products = await db.Products_Track.findAll({
+                    where: {
+                        current_at: data.facility_id,
+                        status: ['Defective', 'Ready to maintain']
+                    },
+                    raw: true
                 })
+
+                if (products.length === 0) {
+                    resolve({
+                        errCode: 2,
+                        message: 'No products need action'
+                    })
+                } else {
+                    for (let i = 0; i < products.length; i++) {
+                        if (products[i].status === 'Defective') {
+                            let productInfo = await db.Product.findOne({
+                                where: {
+                                    product_id: products[i].product_id
+                                },
+                                raw: true
+                            })
+
+                            let facility = await db.Facility.findOne({
+                                where: {
+                                    facility_id: productInfo.manufacture_at
+                                },
+                                raw: true
+                            })
+
+                            products[i].status = 'Sản phẩm bị lỗi, cần chuyển đến ' + facility.facility_name
+                        } else {
+                            let card = await db.Warranty_Card.findOne({
+                                where: {
+                                    product_id: products[i].product_id
+                                },
+                                raw: true
+                            })
+
+                            let facility = await db.Facility.findOne({
+                                where: {
+                                    facility_id: card.maintain_at
+                                },
+                                raw: true
+                            })
+
+                            products[i].status = 'Sản phẩm cần bảo hành, cần chuyển đến ' + facility.facility_name
+                        }
+                    }
+
+                    resolve({
+                        errCode: 0,
+                        message: 'OK',
+                        products: products
+                    })
+                }
             } else {
+                let products = await db.Products_Track.findAll({
+                    where: {
+                        current_at: data.facility_id,
+                        status: ['Need to be recycled', 'Repairing']
+                    },
+                    raw: true
+                })
+
+                if (products.length === 0) {
+                    resolve({
+                        errCode: 2,
+                        message: 'No products need action'
+                    })
+                } else {
+                    resolve({
+                        errCode: 0,
+                        message: 'OK',
+                        products: products
+                    })
+                }
+            }
+        }
+    })
+}
+
+let getProductsOfCustomer = (customer_id) => {
+    return new Promise(async (resolve, reject) => {
+        let customer = await db.Customer.findOne({
+            where: {
+                customer_id: customer_id
+            },
+            raw: true
+        })
+
+        if (!customer) {
+            resolve({
+                errCode: 1,
+                message: 'Customer not found'
+            })
+        } else {
+            try {
+                let products = await db.Products_Track.findAll({
+                    where: {
+                        current_at: null,
+                        owner: customer_id
+                    },
+                    raw: true
+                })
+
                 resolve({
                     errCode: 0,
                     message: 'OK',
                     products: products
+                })
+            } catch {
+                resolve({
+                    errCode: 2,
+                    message: 'Some mysql error',
                 })
             }
         }
@@ -258,4 +357,5 @@ module.exports = {
     relocateProduct: relocateProduct,
     getNewProducts: getNewProducts,
     getNeedActionProducts: getNeedActionProducts,
+    getProductsOfCustomer: getProductsOfCustomer
 }

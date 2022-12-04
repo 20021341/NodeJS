@@ -6,7 +6,7 @@ let handleCreateProduct = async (req, res) => {
     if (!req.body.product_line
         || !req.body.quantity
         || !req.body.factory_id) {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: 'Missing input paramters',
         });
@@ -20,7 +20,7 @@ let handleCreateProduct = async (req, res) => {
             message: 'Create products success',
         });
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: check.message,
         });
@@ -33,7 +33,7 @@ let handleDeliverProducts = async (req, res) => {
         || !req.body.agent_id
         || !req.body.product_line
         || !req.body.quantity) {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: 'Missing input paramters',
         });
@@ -47,7 +47,7 @@ let handleDeliverProducts = async (req, res) => {
             message: 'Deliver products success',
         });
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: check.message,
         });
@@ -57,7 +57,7 @@ let handleDeliverProducts = async (req, res) => {
 // factory_id
 let handleRecycleProducts = async (req, res) => {
     if (!req.body.factory_id) {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: 'Missing input paramters',
         });
@@ -71,7 +71,7 @@ let handleRecycleProducts = async (req, res) => {
             message: 'Recycle products success',
         });
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: check.message,
         });
@@ -81,7 +81,7 @@ let handleRecycleProducts = async (req, res) => {
 // factory_id, product_line
 let handleAnnounceDefectiveProductLine = async (req, res) => {
     if (!req.body.product_line) {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: 'Missing input paramters',
         });
@@ -95,7 +95,7 @@ let handleAnnounceDefectiveProductLine = async (req, res) => {
             message: 'Announce defective success',
         });
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
             errCode: 1,
             message: check.message,
         });
