@@ -129,13 +129,12 @@ let handleGetAllFacilitiesByRole = async (req, res) => {
 
 let handleCreateNewProductLine = async (req, res) => {
     if (!req.body.product_line
-        || req.body.image
-        || req.body.cpu
-        || req.body.gpu
-        || req.body.ram
-        || req.body.memory
-        || req.body.display
-        || req.body.warranty_period) {
+        || !req.body.cpu
+        || !req.body.gpu
+        || !req.body.ram
+        || !req.body.memory
+        || !req.body.display
+        || !req.body.warranty_period) {
         return res.status(200).json({
             errCode: 1,
             message: 'Missing input paramters',

@@ -18,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             primaryKey: true
         },
-        image: DataTypes.STRING,
         cpu: DataTypes.STRING,
         gpu: DataTypes.STRING,
         ram: DataTypes.STRING,

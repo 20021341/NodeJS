@@ -386,7 +386,6 @@ let createNewProductLine = (data) => {
             try {
                 await db.Product_Line.create({
                     product_line: data.product_line,
-                    image: data.image,
                     cpu: data.cpu,
                     gpu: data.gpu,
                     ram: data.ram,
