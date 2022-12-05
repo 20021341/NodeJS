@@ -230,6 +230,7 @@ let getNeedActionProducts = (data) => {
                 message: 'Facility not found'
             })
         } else {
+            // get status of products that current at an agent
             if (facilityData.facility.role === 'agent') {
                 let products = await db.Products_Track.findAll({
                     where: {
@@ -274,10 +275,11 @@ let getNeedActionProducts = (data) => {
                     })
                 }
             } else {
+                // status of products at other facilitities
                 let products = await db.Products_Track.findAll({
                     where: {
                         current_at: data.facility_id,
-                        status: ['Need to be recycled', 'Repairing', 'Defective']
+                        status: ['Need to be recycled', 'Repairing', 'Defective', 'Broken, cannot repair']
                     },
                     raw: true
                 })
@@ -288,6 +290,14 @@ let getNeedActionProducts = (data) => {
                         message: 'No products need action'
                     })
                 } else {
+                    for (let i = 0; i < products.length; i++) {
+                        if (products[i].status === 'Defective' || products[i].status === 'Repairing') {
+                            products[i].status = 'Sản phẩm bị lỗi, cần sửa chữa'
+                        } else {
+                            products[i].status = 'Sản phẩm bị hỏng, cần tái chế'
+                        }
+                    }
+
                     resolve({
                         errCode: 0,
                         message: 'OK',
@@ -338,10 +348,32 @@ let getProductsOfCustomer = (customer_id) => {
     })
 }
 
+let getAllProductLines = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let product_lines = await db.Product_Line.findAll({
+                raw: true
+            })
+
+            resolve({
+                errCode: 0,
+                message: 'OK',
+                product_lines: product_lines
+            })
+        } catch {
+            resolve({
+                errCode: 1,
+                message: 'Some mysql errors',
+            })
+        }
+    })
+}
+
 module.exports = {
     createProduct: createProduct,
     relocateProduct: relocateProduct,
     getNewProducts: getNewProducts,
     getNeedActionProducts: getNeedActionProducts,
-    getProductsOfCustomer: getProductsOfCustomer
+    getProductsOfCustomer: getProductsOfCustomer,
+    getAllProductLines: getAllProductLines
 }

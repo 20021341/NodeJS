@@ -57,7 +57,39 @@ let getAllCustomers = () => {
     })
 }
 
+let getCustomerByID = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let customer = await db.Customer.findOne({
+                where: {
+                    customer_id: data.customer_id
+                },
+                raw: true
+            })
+
+            if (!customer) {
+                resolve({
+                    errCode: 2,
+                    message: 'Customer not found'
+                })
+            } else {
+                resolve({
+                    errCode: 0,
+                    message: 'OK',
+                    customer: customer
+                })
+            }
+        } catch (e) {
+            resolve({
+                errCode: 1,
+                message: 'Some mysql error',
+            })
+        }
+    })
+}
+
 module.exports = {
     createCustomer: createCustomer,
-    getAllCustomers: getAllCustomers
+    getAllCustomers: getAllCustomers,
+    getCustomerByID: getCustomerByID
 }

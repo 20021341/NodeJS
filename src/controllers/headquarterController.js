@@ -1,5 +1,6 @@
 let facilityService = require('../services/facilityService');
-let customerService = require('../services/customerService')
+let customerService = require('../services/customerService');
+const productService = require('../services/productService');
 
 let handleCreateFacility = async (req, res) => {
     if (!req.body.facility_name
@@ -62,6 +63,46 @@ let handleGetAllCustomers = async (req, res) => {
     }
 }
 
+let handleGetCustomerByID = async (req, res) => {
+    if (!req.query.customer_id) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing input parameters',
+        });
+    }
+    let data = await customerService.getCustomerByID(req.query);
+
+    if (data.errCode === 0) {
+        return res.status(200).json({
+            errCode: 0,
+            message: 'Get customer success',
+            customer: data.customer
+        });
+    } else {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Get customer fail',
+        });
+    }
+}
+
+let handleGetAllProductLines = async (req, res) => {
+    let data = await productService.getAllProductLines()
+
+    if (data.errCode === 0) {
+        return res.status(200).json({
+            errCode: 0,
+            message: 'Get all lines success',
+            product_lines: data.product_lines
+        });
+    } else {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Get all lines fail',
+        });
+    }
+}
+
 let handleGetAllFacilitiesByRole = async (req, res) => {
     if (!req.query.role) {
         return res.status(200).json({
@@ -90,5 +131,7 @@ module.exports = {
     handleCreateFacility: handleCreateFacility,
     handleGetAllFacilities: handleGetAllFacilities,
     handleGetAllCustomers: handleGetAllCustomers,
-    handleGetAllFacilitiesByRole: handleGetAllFacilitiesByRole
+    handleGetAllFacilitiesByRole: handleGetAllFacilitiesByRole,
+    handleGetCustomerByID: handleGetCustomerByID,
+    handleGetAllProductLines: handleGetAllProductLines
 }

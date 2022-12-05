@@ -83,7 +83,7 @@ let recycleProducts = (data) => {
                     {
                         where: {
                             current_at: data.factory_id,
-                            status: ["Need to be recycled", "Defective"]
+                            status: ["Need to be recycled"]
                         }
                     }
                 )
@@ -102,18 +102,86 @@ let recycleProducts = (data) => {
     })
 }
 
+let repairProducts = (data) => {
+    return new Promise(async (resolve, reject) => {
+        let factory = await getFacilityInfoByID(data.factory_id)
+
+        if (factory.errCode !== 0 || factory.facility.role !== 'factory') {
+            resolve({
+                errCode: 1,
+                message: 'Factory not found'
+            })
+        } else {
+            try {
+                let products = await db.Products_Track.findAll({
+                    where: {
+                        current_at: data.factory_id,
+                        status: "Defective"
+                    },
+                    raw: true
+                })
+
+                if (!products || products.length === 0) {
+                    resolve({
+                        errCode: 3,
+                        message: 'No products to repair'
+                    })
+                } else {
+                    for (let i = 0; i < products.length; i++) {
+                        let prob = Math.random() <= 0.6;
+                        if (prob) {
+                            await db.Products_Track.update(
+                                {
+                                    status: "Ready to deliver"
+                                },
+                                {
+                                    where: {
+                                        product_id: products[i].product_id
+                                    }
+                                }
+                            )
+                        } else {
+                            await db.Products_Track.update(
+                                {
+                                    status: "Need to be recycled"
+                                },
+                                {
+                                    where: {
+                                        product_id: products[i].product_id
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    resolve({
+                        errCode: 0,
+                        message: 'OK'
+                    })
+                }
+            } catch (e) {
+                resolve({
+                    errCode: 2,
+                    message: 'Some mysql error'
+                })
+            }
+        }
+    })
+}
+
 // factory_id, product_line
-let announceDefectiveProductLine = (data) => {
+let reportDefectiveProductLine = (data) => {
     return new Promise(async (resolve, reject) => {
         /**
          * products = {result, metadata}
          * so products we need is products[0]
          */
         let products = await sequelize.query(
-            'SELECT products_track.* FROM products_track JOIN products ON products_track.product_id = products.product_id WHERE product_line = :product_line',
+            'SELECT products_track.* FROM products_track JOIN products ON products_track.product_id = products.product_id WHERE product_line = :product_line AND products.manufacture_at = :manufacture_at',
             {
                 replacements: {
                     product_line: data.product_line,
+                    manufacture_at: data.factory_id,
                     type: sequelize.QueryTypes.SELECT
                 },
                 raw: true
@@ -123,7 +191,7 @@ let announceDefectiveProductLine = (data) => {
         if (products[0].length === 0) {
             resolve({
                 errCode: 2,
-                message: 'None of this product line has been produced'
+                message: 'None of this product line has been produced in this factory'
             })
         } else {
             try {
@@ -159,5 +227,6 @@ let announceDefectiveProductLine = (data) => {
 module.exports = {
     deliverProducts: deliverProducts,
     recycleProducts: recycleProducts,
-    announceDefectiveProductLine: announceDefectiveProductLine
+    repairProducts: repairProducts,
+    reportDefectiveProductLine: reportDefectiveProductLine
 }

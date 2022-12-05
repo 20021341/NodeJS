@@ -59,6 +59,16 @@ let initAPIRoutes = (app) => {
     // output: customers with OK message, otherwise some errors
     router.get('/hq/get-all-customers', headquarterController.handleGetAllCustomers);
 
+    // Get a customer by id
+    // input: customer_id           
+    // output: customer with OK message, otherwise some errors
+    router.get('/hq/get-customer-by-id', headquarterController.handleGetCustomerByID);
+
+    // Get all product lines
+    // input: none           
+    // output: product lines with OK message, otherwise some errors
+    router.get('/hq/get-all-product-lines', headquarterController.handleGetAllProductLines);
+
     // Create a new facility
     // input: facility_name, phone_number, address, role         
     // output: OK message, otherwise some errors
@@ -103,9 +113,14 @@ let initAPIRoutes = (app) => {
 
     // Repair products, some can be repaired will be delivered to the agent where they came from, 
     // some cannot will be delivered to the factory where they've been produced
-    // input: center_id, product_id
+    // input: center_id
     // output: OK message, otherwise some errors
-    router.post('/center/repair-product', centerController.handleRepairProduct);
+    router.post('/center/repair-products', centerController.handleRepairProducts);
+
+    // Move products those cannot be repaired to factories where they were produced
+    // input: center_id
+    // output: OK message, otherwise some errors
+    router.post('/center/deliver-broken-products', centerController.handleDeliverBrokenProducts);
 
 
     /**
@@ -127,10 +142,15 @@ let initAPIRoutes = (app) => {
     // output: OK message, otherwise some errors
     router.post('/factory/recycle-products', factoryController.handleRecycleProducts);
 
-    // Announce which product line is defective
+    // Repair products, some can be repaired, some cannot
+    // input: factory_id
+    // output: OK message, otherwise some errors
+    router.post('/factory/repair-products', factoryController.handleRepairProducts);
+
+    // Report which product line is defective
     // input: factory_id, product_line
     // output: OK message, otherwise some errors
-    router.post('/factory/announce-defective-products', factoryController.handleAnnounceDefectiveProductLine);
+    router.post('/factory/report-defective-products', factoryController.handleReportDefectiveProductLine);
 
     return app.use('/api', router);
 }

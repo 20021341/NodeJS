@@ -78,21 +78,46 @@ let handleRecycleProducts = async (req, res) => {
     }
 }
 
-// factory_id, product_line
-let handleAnnounceDefectiveProductLine = async (req, res) => {
-    if (!req.body.product_line) {
+// factory_id
+let handleRepairProducts = async (req, res) => {
+    if (!req.body.factory_id) {
         return res.status(200).json({
             errCode: 1,
             message: 'Missing input paramters',
         });
     }
 
-    let check = await factoryService.announceDefectiveProductLine(req.body)
+    let check = await factoryService.repairProducts(req.body)
 
     if (check.errCode == 0) {
         return res.status(200).json({
             errCode: 0,
-            message: 'Announce defective success',
+            message: 'Repair products success',
+        });
+    } else {
+        return res.status(200).json({
+            errCode: 1,
+            message: check.message,
+        });
+    }
+}
+
+// factory_id, product_line
+let handleReportDefectiveProductLine = async (req, res) => {
+    if (!req.body.product_line
+        || !req.body.factory_id) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing input paramters',
+        });
+    }
+
+    let check = await factoryService.reportDefectiveProductLine(req.body)
+
+    if (check.errCode == 0) {
+        return res.status(200).json({
+            errCode: 0,
+            message: 'Report defective success',
         });
     } else {
         return res.status(200).json({
@@ -106,5 +131,6 @@ module.exports = {
     handleCreateProduct: handleCreateProduct,
     handleDeliverProducts: handleDeliverProducts,
     handleRecycleProducts: handleRecycleProducts,
-    handleAnnounceDefectiveProductLine: handleAnnounceDefectiveProductLine,
+    handleRepairProducts: handleRepairProducts,
+    handleReportDefectiveProductLine: handleReportDefectiveProductLine,
 }
