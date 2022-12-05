@@ -27,12 +27,12 @@ let initAPIRoutes = (app) => {
     // Get new products (ownerless, non-defective) in a facility
     // input: facility_id            
     // output: products in format [product_line, quantity]
-    router.get('/get-new-products', siteController.handleGetNewProducts);
+    router.get('/get-good-products', siteController.handleGetGoodProducts);
 
     // Get products that need action (repair) in a facility
     // input: facility_id            
     // output: products 
-    router.get('/get-need-action-products', siteController.handleGetNeedActionProducts);
+    router.get('/get-bad-products', siteController.handleGetBadProducts);
 
     // Get products of customer
     // input: customer_id       
@@ -68,6 +68,11 @@ let initAPIRoutes = (app) => {
     // input: none           
     // output: product lines with OK message, otherwise some errors
     router.get('/hq/get-all-product-lines', headquarterController.handleGetAllProductLines);
+
+    // Create new product line
+    // input: all product line properties           
+    // output: OK message, otherwise some errors
+    router.post('/hq/create-new-product-line', headquarterController.handleCreateNewProductLine);
 
     // Create a new facility
     // input: facility_name, phone_number, address, role         

@@ -172,7 +172,7 @@ let relocateProduct = (data) => {
 }
 
 // facility_id
-let getNewProducts = (data) => {
+let getGoodProducts = (data) => {
     return new Promise(async (resolve, reject) => {
         let facilityData = await getFacilityInfoByID(data.facility_id)
 
@@ -220,7 +220,7 @@ let getNewProducts = (data) => {
 }
 
 // facility_id
-let getNeedActionProducts = (data) => {
+let getBadProducts = (data) => {
     return new Promise(async (resolve, reject) => {
         let facilityData = await getFacilityInfoByID(data.facility_id)
 
@@ -369,11 +369,52 @@ let getAllProductLines = () => {
     })
 }
 
+let createNewProductLine = (data) => {
+    return new Promise(async (resolve, reject) => {
+        let product_line_info = await db.Product_Line.findOne({
+            where: {
+                product_line: data.product_line
+            }
+        })
+
+        if (product_line_info) {
+            resolve({
+                errCode: 1,
+                message: "Product line already exists"
+            })
+        } else {
+            try {
+                await db.Product_Line.create({
+                    product_line: data.product_line,
+                    image: data.image,
+                    cpu: data.cpu,
+                    gpu: data.gpu,
+                    ram: data.ram,
+                    memory: data.memory,
+                    display: data.display,
+                    warranty_period: data.warranty_period
+                })
+
+                resolve({
+                    errCode: 0,
+                    message: 'Create product line success'
+                })
+            } catch {
+                resolve({
+                    errCode: 2,
+                    message: 'Some mysql errors'
+                })
+            }
+        }
+    })
+}
+
 module.exports = {
     createProduct: createProduct,
     relocateProduct: relocateProduct,
-    getNewProducts: getNewProducts,
-    getNeedActionProducts: getNeedActionProducts,
+    getGoodProducts: getGoodProducts,
+    getBadProducts: getBadProducts,
     getProductsOfCustomer: getProductsOfCustomer,
-    getAllProductLines: getAllProductLines
+    getAllProductLines: getAllProductLines,
+    createNewProductLine: createNewProductLine
 }

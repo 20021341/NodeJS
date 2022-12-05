@@ -1,7 +1,7 @@
 let productService = require('../services/productService');
 
 // facility_id
-let handleGetNewProducts = async (req, res) => {
+let handleGetGoodProducts = async (req, res) => {
     if (!req.query.facility_id) {
         return res.status(200).json({
             errCode: 1,
@@ -9,7 +9,7 @@ let handleGetNewProducts = async (req, res) => {
         });
     }
 
-    let data = await productService.getNewProducts(req.query);
+    let data = await productService.getGoodProducts(req.query);
 
     if (data.errCode === 0) {
         return res.status(200).json({
@@ -26,7 +26,7 @@ let handleGetNewProducts = async (req, res) => {
 }
 
 // facility_id
-let handleGetNeedActionProducts = async (req, res) => {
+let handleGetBadProducts = async (req, res) => {
     if (!req.query.facility_id) {
         return res.status(200).json({
             errCode: 1,
@@ -34,7 +34,7 @@ let handleGetNeedActionProducts = async (req, res) => {
         });
     }
 
-    let data = await productService.getNeedActionProducts(req.query);
+    let data = await productService.getBadProducts(req.query);
 
     if (data.errCode === 0) {
         return res.status(200).json({
@@ -75,7 +75,7 @@ let handleGetProductsOfCustomer = async (req, res) => {
 }
 
 module.exports = {
-    handleGetNewProducts: handleGetNewProducts,
-    handleGetNeedActionProducts: handleGetNeedActionProducts,
+    handleGetGoodProducts: handleGetGoodProducts,
+    handleGetBadProducts: handleGetBadProducts,
     handleGetProductsOfCustomer: handleGetProductsOfCustomer
 }
