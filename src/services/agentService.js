@@ -1,4 +1,5 @@
 const db = require('../models/index')
+const { sequelize } = require('../models/index');
 const { getFacilityInfoByID } = require('./facilityService')
 const { relocateProduct } = require('./productService')
 
@@ -154,7 +155,60 @@ let deliverDefectiveProducts = (data) => {
     })
 }
 
+let getProductsNeedRetrieving = (data) => {
+    return new Promise(async (resolve, reject) => {
+        let agent = await getFacilityInfoByID(data.agent_id)
+
+        if (agent.errCode !== 0 || agent.facility.role !== "agent") {
+            resolve({
+                errCode: 2,
+                message: 'Agent not found'
+            })
+        } else {
+            try {
+                let products = await sequelize.query(
+                    'SELECT products_track.product_id, customers.*, products_track.status ' +
+                    'FROM bills JOIN products_track ON bills.product_id = products_track.product_id ' +
+                    'JOIN customers ON bills.customer_id = customers.customer_id ' +
+                    'WHERE products_track.current_at IS NULL AND status = :status AND bills.buy_at = :buy_at',
+                    {
+                        replacements: {
+                            status: "Defective",
+                            buy_at: data.agent_id,
+                            type: sequelize.QueryTypes.SELECT
+                        },
+                        raw: true
+                    }
+                )
+
+                if (!products[0] || products[0].length === 0) {
+                    resolve({
+                        errCode: 1,
+                        message: 'No products to retrieve'
+                    })
+                } else {
+                    for (let i = 0; i < products[0].length; i++) {
+                        products[0][i].status = "Sản phẩm bị lỗi, cần liên hệ khách hàng để thu hồi"
+                    }
+
+                    resolve({
+                        errCode: 0,
+                        message: 'OK',
+                        products: products[0]
+                    })
+                }
+            } catch {
+                resolve({
+                    errCode: 3,
+                    message: 'Some mysql errors'
+                })
+            }
+        }
+    })
+}
+
 module.exports = {
     deliverCustomersProducts: deliverCustomersProducts,
-    deliverDefectiveProducts: deliverDefectiveProducts
+    deliverDefectiveProducts: deliverDefectiveProducts,
+    getProductsNeedRetrieving: getProductsNeedRetrieving
 }

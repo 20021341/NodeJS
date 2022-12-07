@@ -111,6 +111,9 @@ let initAPIRoutes = (app) => {
     // Get cards created at this agent
     router.get('/agent/get-cards-by-agent-id', agentController.handleGetCardsByAgentID)
 
+    // Get defective products need retrieving from customers
+    router.get('/agent/get-products-need-retrieving', agentController.handleGetProductsNeedRetrieving)
+
 
     /**
      * Maintainance center API

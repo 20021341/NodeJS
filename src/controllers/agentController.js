@@ -154,6 +154,29 @@ let handleGetCardsByAgentID = async (req, res) => {
     }
 }
 
+let handleGetProductsNeedRetrieving = async (req, res) => {
+    if (!req.query.agent_id) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing input paramters',
+        });
+    }
+
+    let data = await agentService.getProductsNeedRetrieving(req.query)
+
+    if (data.errCode == 0) {
+        return res.status(200).json({
+            errCode: 0,
+            message: 'OK',
+            products: data.products
+        });
+    } else {
+        return res.status(200).json({
+            errCode: 1,
+            message: data.message,
+        });
+    }
+}
 
 module.exports = {
     handleDeliverCustomersProducts: handleDeliverCustomersProducts,
@@ -161,5 +184,6 @@ module.exports = {
     handleCreateBill: handleCreateBill,
     handleCreateCard: handleCreateCard,
     handleGetBillsByAgentID: handleGetBillsByAgentID,
-    handleGetCardsByAgentID: handleGetCardsByAgentID
+    handleGetCardsByAgentID: handleGetCardsByAgentID,
+    handleGetProductsNeedRetrieving: handleGetProductsNeedRetrieving
 }
