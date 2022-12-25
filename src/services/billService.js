@@ -30,12 +30,12 @@ let createBill = (data) => {
         if (!agent || agent.role !== "agent") {
             resolve({
                 errCode: 1,
-                message: 'Agent not found'
+                message: 'Không tìm thấy đại lý này'
             })
         } else if (products[0].length < data.quantity) {
             resolve({
                 errCode: 2,
-                message: "Insufficient product"
+                message: "Số lượng không đủ"
             })
         } else {
             let customer = await db.Customer.findOne({
@@ -56,7 +56,7 @@ let createBill = (data) => {
 
                 resolve({
                     errCode: 4,
-                    message: 'Customer info not match'
+                    message: 'Thông tin khách hàng không khớp'
                 })
             } else {
                 for (let i = 0; i < data.quantity; i++) {
@@ -96,7 +96,7 @@ let createBill = (data) => {
                         console.log(e)
                         resolve({
                             errCode: 3,
-                            message: 'Cannot create bill'
+                            message: 'Có lỗi xảy ra'
                         })
                         reject(e)
                     }
@@ -130,7 +130,7 @@ let getBillsByAgentID = (data) => {
         } catch {
             resolve({
                 errCode: 1,
-                message: 'Some mysql error'
+                message: 'Có lỗi xảy ra'
             })
         }
     })

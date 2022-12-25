@@ -14,7 +14,7 @@ let createProduct = (data) => {
                 if (!product_line) {
                     resolve({
                         errCode: 3,
-                        message: 'Product line not exists'
+                        message: 'Không tìm thấy dòng sản phẩm'
                     })
                 } else {
                     try {
@@ -54,7 +54,7 @@ let createProduct = (data) => {
                     } catch (e) {
                         resolve({
                             errCode: 3,
-                            message: "Some mysql error"
+                            message: "Có lỗi xảy ra"
                         })
                         console.log(e)
                     }
@@ -62,13 +62,13 @@ let createProduct = (data) => {
             } else {
                 resolve({
                     errCode: 2,
-                    message: "Facility is not factory"
+                    message: "Cơ sở này không phải nhà máy"
                 })
             }
         } else {
             resolve({
                 errCode: 1,
-                message: "Cannot find facility"
+                message: "Có lỗi xảy ra"
             })
         }
     })
@@ -90,7 +90,7 @@ let relocateProduct = (data) => {
              */
             resolve({
                 errCode: 3,
-                message: "Product not found"
+                message: "Không tìm thấy sản phẩm"
             })
         } else {
             /**
@@ -108,7 +108,7 @@ let relocateProduct = (data) => {
                  */
                 resolve({
                     errCode: 1,
-                    message: "Destination facility not found"
+                    message: "Không tìm thấy đích đến"
                 })
             } else {
                 /**
@@ -136,7 +136,7 @@ let relocateProduct = (data) => {
                      */
                     resolve({
                         errCode: 2,
-                        message: "Wrong direction"
+                        message: "Vận chuyển không đúng cách"
                     })
                 } else {
                     try {
@@ -161,7 +161,7 @@ let relocateProduct = (data) => {
                          */
                         resolve({
                             errCode: 3,
-                            message: "Cannot relocate"
+                            message: "Có lỗi xảy ra"
                         })
                         reject(e)
                     }
@@ -179,12 +179,12 @@ let getGoodProducts = (data) => {
         if (facilityData.errCode !== 0) {
             resolve({
                 errCode: 1,
-                message: 'Facility not found'
+                message: 'Không tìm thấy cơ sở'
             })
         } else if (facilityData.facility.role === "center") {
             resolve({
                 errCode: 1,
-                message: 'Only factory and agent has working products, center does not'
+                message: 'Chỉ có nhà máy và đại lý có sản phẩm tốt, trung tâm bảo hành thì không'
             })
         } else {
             let products = await sequelize.query(
@@ -206,7 +206,7 @@ let getGoodProducts = (data) => {
             if (products[0].length === 0) {
                 resolve({
                     errCode: 2,
-                    message: 'This facility has no working products'
+                    message: 'Cơ sở này không có sản phẩm tốt nào'
                 })
             } else {
                 resolve({
@@ -227,7 +227,7 @@ let getBadProducts = (data) => {
         if (facilityData.errCode !== 0) {
             resolve({
                 errCode: 1,
-                message: 'Facility not found'
+                message: 'Không tìm thấy cơ sở'
             })
         } else {
             // get status of products that current at an agent
@@ -243,7 +243,7 @@ let getBadProducts = (data) => {
                 if (products.length === 0) {
                     resolve({
                         errCode: 2,
-                        message: 'No products need action'
+                        message: 'Không có sản phẩm xấu nào'
                     })
                 } else {
                     for (let i = 0; i < products.length; i++) {
@@ -287,7 +287,7 @@ let getBadProducts = (data) => {
                 if (products.length === 0) {
                     resolve({
                         errCode: 2,
-                        message: 'No products need action'
+                        message: 'Không có sản phẩm xấu nào'
                     })
                 } else {
                     for (let i = 0; i < products.length; i++) {
@@ -321,7 +321,7 @@ let getProductsOfCustomer = (customer_id) => {
         if (!customer) {
             resolve({
                 errCode: 1,
-                message: 'Customer not found'
+                message: 'Không tìm thấy khách hàng'
             })
         } else {
             try {
@@ -341,7 +341,7 @@ let getProductsOfCustomer = (customer_id) => {
             } catch {
                 resolve({
                     errCode: 2,
-                    message: 'Some mysql error',
+                    message: 'Có lỗi xảy ra',
                 })
             }
         }
@@ -363,7 +363,7 @@ let getAllProductLines = () => {
         } catch {
             resolve({
                 errCode: 1,
-                message: 'Some mysql errors',
+                message: 'Có lỗi xảy ra',
             })
         }
     })
@@ -380,7 +380,7 @@ let createNewProductLine = (data) => {
         if (product_line_info) {
             resolve({
                 errCode: 1,
-                message: "Product line already exists"
+                message: "Dòng sản phẩm đã tồn tại"
             })
         } else {
             try {
@@ -396,12 +396,12 @@ let createNewProductLine = (data) => {
 
                 resolve({
                     errCode: 0,
-                    message: 'Create product line success'
+                    message: 'OK'
                 })
             } catch {
                 resolve({
                     errCode: 2,
-                    message: 'Some mysql errors'
+                    message: 'Có lỗi xảy ra'
                 })
             }
         }

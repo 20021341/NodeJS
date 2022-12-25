@@ -6,7 +6,7 @@ let createFacility = (data) => {
         if (facilityData.errCode === 0) {
             resolve({
                 errCode: 1,
-                message: 'Facility name already exists'
+                message: 'Tên cơ sở đã được dùng'
             })
         } else {
             let new_facility_id = ""
@@ -35,7 +35,7 @@ let createFacility = (data) => {
             } catch (e) {
                 resolve({
                     errCode: 1,
-                    message: 'Cannot create facility'
+                    message: 'Có lỗi xảy ra'
                 });
                 reject(e);
             }
@@ -61,7 +61,7 @@ let getFacilityInfoByID = (facility_id) => {
             else {
                 resolve({
                     errCode: 1,
-                    message: 'Facility not found',
+                    message: 'Không tìm thấy cơ sở',
                 });
             }
 
@@ -89,7 +89,7 @@ let getFacilityInfoByName = (facility_name) => {
             else {
                 resolve({
                     errCode: 1,
-                    message: 'Facility not found',
+                    message: 'Không tìm thấy cơ sở',
                 });
             }
 
@@ -114,7 +114,7 @@ let getAllFacilities = () => {
         } catch (e) {
             resolve({
                 errCode: 1,
-                message: 'Some mysql error',
+                message: 'Có lỗi xảy ra',
             })
         }
     })
@@ -138,7 +138,7 @@ let getAllFacilitiesByRole = (role) => {
         } catch (e) {
             resolve({
                 errCode: 1,
-                message: 'Some mysql error',
+                message: 'Có lỗi xảy ra',
             })
         }
     })

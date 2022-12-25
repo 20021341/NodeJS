@@ -43,27 +43,27 @@ let createCard = (data) => {
         if (product[0].length === 0) {
             resolve({
                 errCode: 1,
-                message: 'Product not found or product has not been sold yet'
+                message: 'Không tìm thấy sản phẩm hoặc sản phẩm không ở chỗ khách hàng'
             })
         } else if (!agent || agent.role !== "agent") {
             resolve({
                 errCode: 3,
-                message: 'Agent not found'
+                message: 'Không tìm thấy đại lý'
             })
         } else if (!center || center.role !== "center") {
             resolve({
                 errCode: 2,
-                message: 'Center not found'
+                message: 'Không tìm thấy trung tâm bảo hành'
             })
         } else if (!customer) {
             resolve({
                 errCode: 3,
-                message: 'Customer not found'
+                message: 'Không tìm thấy khách hàng'
             })
         } else if (!bill) {
             resolve({
                 errCode: 4,
-                message: 'Bill not found'
+                message: 'Không tìm thấy hóa đơn của sản phẩm'
             })
         } else {
             let now = new Date()
@@ -74,17 +74,17 @@ let createCard = (data) => {
             if (bill.customer_id !== data.customer_id) {
                 resolve({
                     errCode: 3,
-                    message: 'Customer id not match'
+                    message: 'Mã khách hàng không khớp với hóa đơn'
                 })
             } else if (bill.buy_at !== agent.facility_id) {
                 resolve({
                     errCode: 4,
-                    message: 'Please bring ur product to where u bought it'
+                    message: 'Sản phẩm không phải được mua ở đại lý này'
                 })
             } else if (diff > product[0][0].warranty_period) {
                 resolve({
                     errCode: 5,
-                    message: 'Your product is expired'
+                    message: 'Sản phẩm đã hết thời hạn bảo hành'
                 })
             } else {
                 let new_card_id
@@ -128,7 +128,7 @@ let createCard = (data) => {
                 } catch (e) {
                     resolve({
                         errCode: 3,
-                        message: 'Cannot create card'
+                        message: 'Có lỗi xảy ra'
                     })
                     reject(e)
                 }
@@ -167,7 +167,7 @@ let getCardsByAgentID = (data) => {
         } catch {
             resolve({
                 errCode: 1,
-                message: 'Some mysql error'
+                message: 'Có lỗi xảy ra'
             })
         }
     })

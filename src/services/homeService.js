@@ -16,13 +16,13 @@ let login = (data) => {
                 } else {
                     resolve({
                         errCode: 1,
-                        message: 'Wrong password'
+                        message: 'Sai mật khẩu'
                     })
                 }
             } else {
                 resolve({
                     errCode: 2,
-                    message: 'Facility not found'
+                    message: 'Sai mã cơ sở'
                 })
             }
         } catch (e) {

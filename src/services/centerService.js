@@ -10,7 +10,7 @@ let repairProducts = (data) => {
         if (center.errCode !== 0 || center.facility.role !== "center") {
             resolve({
                 errCode: 1,
-                message: 'Center not found'
+                message: 'Không tìm thấy trung tâm bảo hành'
             })
         } else {
             let products = await db.Products_Track.findAll({
@@ -24,7 +24,7 @@ let repairProducts = (data) => {
             if (!products || products.length === 0) {
                 resolve({
                     errCode: 2,
-                    message: "No products to repair"
+                    message: "Không có sản phẩm nào cần sửa chữa"
                 })
             } else {
                 for (let i = 0; i < products.length; i++) {
@@ -38,7 +38,7 @@ let repairProducts = (data) => {
                     if (!card) {
                         resolve({
                             errCode: 4,
-                            message: "Cannot find " + products[i].product_id + " warranty card"
+                            message: "Không tìm thấy phiếu bảo hành của sản phẩm " + products[i].product_id
                         })
                     } else {
                         let prob = Math.random() <= 0.6;
@@ -81,7 +81,7 @@ let repairProducts = (data) => {
                             } else {
                                 resolve({
                                     errCode: 5,
-                                    message: "Some error in mysql"
+                                    message: "Có lỗi xảy ra"
                                 })
                             }
                         } else {
@@ -119,7 +119,7 @@ let repairProducts = (data) => {
                             } catch {
                                 resolve({
                                     errCode: 5,
-                                    message: 'Some mysql errors'
+                                    message: 'Có lỗi xảy ra'
                                 })
                             }
                         }
@@ -148,7 +148,7 @@ let deliverBrokenProducts = async (data) => {
         if (!products || products.length === 0) {
             resolve({
                 errCode: 1,
-                message: 'No product is broken'
+                message: 'Không có sản phẩm nào bị hỏng'
             })
         } else {
             try {
@@ -173,7 +173,7 @@ let deliverBrokenProducts = async (data) => {
             } catch {
                 resolve({
                     errCode: 2,
-                    message: 'Some mysql errors'
+                    message: 'Có lỗi xảy ra'
                 })
             }
         }

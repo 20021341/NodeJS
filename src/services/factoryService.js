@@ -29,17 +29,17 @@ let deliverProducts = (data) => {
         if (factory.errCode !== 0 || factory.facility.role !== "factory") {
             resolve({
                 errCode: 1,
-                message: 'Factory not found'
+                message: 'Không tìm thấy nhà máy'
             })
         } else if (agent.errCode !== 0 || agent.facility.role !== "agent") {
             resolve({
                 errCode: 1,
-                message: 'Agent not found'
+                message: 'Không tìm thấy đại lý'
             })
         } else if (products[0].length === 0 || products[0].length < data.quantity) {
             resolve({
                 errCode: 2,
-                message: 'No product left or not enough to deliver'
+                message: 'Không đủ sản phẩm để vận chuyển'
             })
         } else {
             for (let i = 0; i < data.quantity; i++) {
@@ -51,7 +51,7 @@ let deliverProducts = (data) => {
                 if (check.errCode !== 0) {
                     resolve({
                         errCode: 3,
-                        message: 'Some mysql error'
+                        message: 'Có lỗi xảy ra'
                     })
                 }
             }
@@ -72,31 +72,45 @@ let recycleProducts = (data) => {
         if (factory.errCode !== 0 || factory.facility.role !== 'factory') {
             resolve({
                 errCode: 1,
-                message: 'Factory not found'
+                message: 'Không tìm thấy nhà máy'
             })
         } else {
-            try {
-                await db.Products_Track.update(
-                    {
-                        status: "Recycled"
-                    },
-                    {
-                        where: {
-                            current_at: data.factory_id,
-                            status: ["Need to be recycled"]
+            let products = await db.Products_Track.findAll({
+                where: {
+                    current_at: data.factory_id,
+                    status: ["Need to be recycled"]
+                },
+                raw: true
+            })
+            if (products.length === 0) {
+                resolve({
+                    errCode: 3,
+                    message: 'Không có sản phẩm cần tái chế'
+                })
+            } else {
+                try {
+                    await db.Products_Track.update(
+                        {
+                            status: "Recycled"
+                        },
+                        {
+                            where: {
+                                current_at: data.factory_id,
+                                status: ["Need to be recycled"]
+                            }
                         }
-                    }
-                )
+                    )
 
-                resolve({
-                    errCode: 0,
-                    message: 'OK'
-                })
-            } catch (e) {
-                resolve({
-                    errCode: 2,
-                    message: 'Some mysql error'
-                })
+                    resolve({
+                        errCode: 0,
+                        message: 'OK'
+                    })
+                } catch (e) {
+                    resolve({
+                        errCode: 2,
+                        message: 'Có lỗi xảy ra'
+                    })
+                }
             }
         }
     })
@@ -109,7 +123,7 @@ let repairProducts = (data) => {
         if (factory.errCode !== 0 || factory.facility.role !== 'factory') {
             resolve({
                 errCode: 1,
-                message: 'Factory not found'
+                message: 'Không tìm thấy nhà máy'
             })
         } else {
             try {
@@ -124,7 +138,7 @@ let repairProducts = (data) => {
                 if (!products || products.length === 0) {
                     resolve({
                         errCode: 3,
-                        message: 'No products to repair'
+                        message: 'Không có sản phẩm nào cần sửa chữa'
                     })
                 } else {
                     for (let i = 0; i < products.length; i++) {
@@ -162,7 +176,7 @@ let repairProducts = (data) => {
             } catch (e) {
                 resolve({
                     errCode: 2,
-                    message: 'Some mysql error'
+                    message: 'Có lỗi xảy ra'
                 })
             }
         }
@@ -191,7 +205,7 @@ let reportDefectiveProductLine = (data) => {
         if (products[0].length === 0) {
             resolve({
                 errCode: 2,
-                message: 'None of this product line has been produced in this factory'
+                message: 'Nhà máy này chưa sản xuất sản phẩm nào thuộc dòng sản phẩm trên'
             })
         } else {
             try {
@@ -212,7 +226,7 @@ let reportDefectiveProductLine = (data) => {
             } catch (e) {
                 resolve({
                     errCode: 3,
-                    message: 'Some mysql error'
+                    message: 'Có lỗi xảy ra'
                 })
             }
 

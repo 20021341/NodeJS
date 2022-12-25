@@ -26,7 +26,7 @@ let deliverCustomersProducts = (data) => {
                 if (products.length === 0) {
                     resolve({
                         errCode: 1,
-                        message: 'No products need action'
+                        message: 'Không có sản phẩm nào bị lỗi'
                     })
                 } else {
                     for (let i = 0; i < products.length; i++) {
@@ -41,7 +41,7 @@ let deliverCustomersProducts = (data) => {
                         if (!card) {
                             resolve({
                                 errCode: 2,
-                                message: "Cannot find this product\'s warranty card"
+                                message: "Không tìm thấy phiếu bảo hành của sản phẩm"
                             })
                         } else {
                             let check = await relocateProduct({
@@ -61,7 +61,7 @@ let deliverCustomersProducts = (data) => {
                             } else {
                                 resolve({
                                     errCode: 2,
-                                    message: "Cannot deliver"
+                                    message: "Có lỗi xảy ra"
                                 })
                             }
                         }
@@ -88,12 +88,12 @@ let deliverDefectiveProducts = (data) => {
         if (agent.errCode !== 0 || agent.facility.role !== "agent") {
             resolve({
                 errCode: 2,
-                message: 'Agent not found'
+                message: 'Không tìm thấy đại lý'
             })
         } else if (center.errCode !== 0 || center.facility.role !== "center") {
             resolve({
                 errCode: 2,
-                message: 'Center not found'
+                message: 'Không tìm thấy trung tâm bảo hành'
             })
         } else {
             let products = await db.Products_Track.findAll({
@@ -107,7 +107,7 @@ let deliverDefectiveProducts = (data) => {
             if (products.length === 0) {
                 resolve({
                     errCode: 1,
-                    message: 'No product is defective'
+                    message: 'Không có sản phẩm nào bị lỗi'
                 })
             } else {
                 for (let i = 0; i < products.length; i++) {
@@ -146,7 +146,7 @@ let deliverDefectiveProducts = (data) => {
                     } else {
                         resolve({
                             errCode: 3,
-                            message: 'Cannot deliver'
+                            message: 'Có lỗi xảy ra'
                         })
                     }
                 }
@@ -162,7 +162,7 @@ let getProductsNeedRetrieving = (data) => {
         if (agent.errCode !== 0 || agent.facility.role !== "agent") {
             resolve({
                 errCode: 2,
-                message: 'Agent not found'
+                message: 'Không tìm thấy đại lý'
             })
         } else {
             try {
@@ -184,7 +184,7 @@ let getProductsNeedRetrieving = (data) => {
                 if (!products[0] || products[0].length === 0) {
                     resolve({
                         errCode: 1,
-                        message: 'No products to retrieve'
+                        message: 'Không có sản phẩm nào cần thu hồi'
                     })
                 } else {
                     for (let i = 0; i < products[0].length; i++) {
@@ -200,7 +200,7 @@ let getProductsNeedRetrieving = (data) => {
             } catch {
                 resolve({
                     errCode: 3,
-                    message: 'Some mysql errors'
+                    message: 'Có lỗi xảy ra'
                 })
             }
         }

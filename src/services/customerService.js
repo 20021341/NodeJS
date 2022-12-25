@@ -22,7 +22,7 @@ let createCustomer = (data) => {
             } catch (e) {
                 resolve({
                     errCode: 1,
-                    message: 'Cannot create customer'
+                    message: 'Có lỗi xảy ra'
                 })
 
                 reject(e)
@@ -30,7 +30,7 @@ let createCustomer = (data) => {
         } else {
             resolve({
                 errCode: 2,
-                message: 'Customer already exists'
+                message: 'Khách hàng đã tồn tại'
             })
         }
     })
@@ -51,7 +51,7 @@ let getAllCustomers = () => {
         } catch (e) {
             resolve({
                 errCode: 1,
-                message: 'Some mysql error',
+                message: 'Có lỗi xảy ra',
             })
         }
     })
@@ -70,7 +70,7 @@ let getCustomerByID = (data) => {
             if (!customer) {
                 resolve({
                     errCode: 2,
-                    message: 'Customer not found'
+                    message: 'Không tìm thấy khách hàng'
                 })
             } else {
                 resolve({
@@ -82,7 +82,7 @@ let getCustomerByID = (data) => {
         } catch (e) {
             resolve({
                 errCode: 1,
-                message: 'Some mysql error',
+                message: 'Có lỗi xảy ra',
             })
         }
     })
