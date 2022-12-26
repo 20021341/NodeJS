@@ -47,7 +47,6 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         modelName: 'Warranty_Card',
         timestamps: false,
-        freezeTableName: true
     });
     return Warranty_Card;
 };

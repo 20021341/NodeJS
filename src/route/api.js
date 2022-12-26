@@ -84,6 +84,10 @@ let initAPIRoutes = (app) => {
      * Agent API
      */
 
+    // Get statistics
+    // input: agent_id, year, product_line
+    router.get('/agent/get-sales-statistics-by-product-line', agentController.handleGetSalesStatisticsByProductLine)
+
     // Create bill
     // input: product_line, quantity, agent_id, customer_id, fullname, phone_number
     // output: OK message, otherwise some errors
@@ -119,6 +123,14 @@ let initAPIRoutes = (app) => {
      * Maintainance center API
      */
 
+    // Get warranty statistics
+    // input: agent_id, year, product_line
+    router.get('/center/get-warranty-statistics-by-product-line', centerController.handleGetWarrantyStatisticsByProductLine)
+
+    // Get broken rate statistics
+    // input: agent_id, year
+    router.get('/center/get-broken-rate-statistics', centerController.handleGetBrokenRateStatistics)
+
     // Repair products, some can be repaired will be delivered to the agent where they came from, 
     // some cannot will be delivered to the factory where they've been produced
     // input: center_id
@@ -134,6 +146,14 @@ let initAPIRoutes = (app) => {
     /**
      * Factory API
      */
+
+    // Get sales statistics
+    // input: factory_id, year, product_line
+    router.get('/factory/get-sales-over-produce-statistics', factoryController.handleGetSalesOverProduceStatistics)
+
+    // Get defective statistics
+    // input: factory_id, year, product_line
+    router.get('/factory/get-defective-over-produce-statistics', factoryController.handleGetDefectiveOverProduceStatistics)
 
     // Produce some products of a certain product line
     // input: factory_id, product_line, quantity

@@ -2,6 +2,26 @@ let agentService = require('../services/agentService');
 let billService = require('../services/billService');
 let cardService = require('../services/cardService');
 
+// agent_id, year, product_line
+let handleGetSalesStatisticsByProductLine = async (req, res) => {
+    if (!req.query.agent_id
+        || !req.query.year
+        || !req.query.product_line) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Nhập thiếu thông tin',
+        });
+    }
+
+    let data = await agentService.getSalesStatisticsByProductLine(req.query)
+
+    return res.status(200).json({
+        errCode: data.errCode,
+        message: data.message,
+        statistics: data.statistics
+    })
+}
+
 let handleCreateCard = async (req, res) => {
     if (!req.body.product_id
         || !req.body.agent_id
@@ -130,6 +150,7 @@ let handleGetProductsNeedRetrieving = async (req, res) => {
 }
 
 module.exports = {
+    handleGetSalesStatisticsByProductLine: handleGetSalesStatisticsByProductLine,
     handleDeliverCustomersProducts: handleDeliverCustomersProducts,
     handleDeliverDefectiveProducts: handleDeliverDefectiveProducts,
     handleCreateBill: handleCreateBill,

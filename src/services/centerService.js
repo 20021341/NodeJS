@@ -1,6 +1,106 @@
 const db = require('../models/index')
+const { sequelize } = require('../models/index');
 const { getFacilityInfoByID } = require('./facilityService')
 const { relocateProduct } = require('./productService')
+
+// center_id, year, product_line
+let getWarrantyStatisticsByProductLine = (data) => {
+    return new Promise(async (resolve, reject) => {
+        let center = await getFacilityInfoByID(data.center_id)
+        let product_line = await db.Product_Line.findOne({
+            where: {
+                product_line: data.product_line
+            },
+            raw: true
+        })
+
+        if (center.errCode !== 0) {
+            resolve({
+                errCode: 1,
+                message: 'Không tìm thấy trung tâm'
+            })
+        } else if (!product_line) {
+            resolve({
+                errCode: 2,
+                message: 'Không tìm thấy dòng sản phẩm'
+            })
+        } else {
+            try {
+                let statistics = await sequelize.query(
+                    'SELECT months.month AS month, ' +
+                    'SUM(IF(warranty_cards.card_id IS NOT NULL AND warranty_cards.maintain_at = :center_id AND YEAR(warranty_cards.create_date) = :year AND products.product_line = :product_line, 1, 0)) AS quantity ' +
+                    'FROM warranty_cards JOIN products ON warranty_cards.product_id = products.product_id ' +
+                    'RIGHT JOIN months ON MONTH(warranty_cards.create_date) = months.month ' +
+                    'GROUP BY months.month ' +
+                    'ORDER BY month',
+                    {
+                        replacements: {
+                            product_line: data.product_line,
+                            center_id: data.center_id,
+                            year: data.year,
+                            type: sequelize.QueryTypes.SELECT
+                        },
+                        raw: true
+                    }
+                )
+
+                resolve({
+                    errCode: 0,
+                    message: 'OK',
+                    statistics: statistics[0]
+                })
+            } catch (e) {
+                resolve({
+                    errCode: 3,
+                    message: 'Có lỗi xảy ra'
+                })
+            }
+        }
+    })
+}
+
+// center_id, year
+let getBrokenRateStatistics = (data) => {
+    return new Promise(async (resolve, reject) => {
+        let center = await getFacilityInfoByID(data.center_id)
+
+        if (center.errCode !== 0) {
+            resolve({
+                errCode: 1,
+                message: 'Không tìm thấy trung tâm'
+            })
+        } else {
+            try {
+                let statistics = await sequelize.query(
+                    'SELECT a.status, (a.sum/a.total)*100 AS rate ' +
+                    'FROM (SELECT status, count(card_id) AS sum, (SELECT COUNT(card_id) FROM warranty_cards WHERE maintain_at = :center_id) AS total ' +
+                    'FROM warranty_cards ' +
+                    'WHERE maintain_at = :center_id AND YEAR(create_date) = :year ' +
+                    'GROUP BY status) AS a',
+                    {
+                        replacements: {
+                            center_id: data.center_id,
+                            year: data.year,
+                            type: sequelize.QueryTypes.SELECT
+                        },
+                        raw: true
+                    }
+                )
+
+                resolve({
+                    errCode: 0,
+                    message: 'OK',
+                    statistics: statistics[0]
+                })
+            } catch (e) {
+                resolve({
+                    errCode: 3,
+                    message: 'Có lỗi xảy ra'
+                })
+            }
+        }
+    })
+}
 
 // center_id
 let repairProducts = (data) => {
@@ -182,5 +282,7 @@ let deliverBrokenProducts = async (data) => {
 
 module.exports = {
     repairProducts: repairProducts,
-    deliverBrokenProducts: deliverBrokenProducts
+    deliverBrokenProducts: deliverBrokenProducts,
+    getWarrantyStatisticsByProductLine: getWarrantyStatisticsByProductLine,
+    getBrokenRateStatistics: getBrokenRateStatistics
 }

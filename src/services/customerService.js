@@ -1,3 +1,5 @@
+const { QueryTypes } = require('sequelize');
+const { sequelize } = require('../models/index');
 const db = require('../models/index');
 
 let createCustomer = (data) => {
@@ -39,9 +41,15 @@ let createCustomer = (data) => {
 let getAllCustomers = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            let customers = await db.Customer.findAll({
-                raw: true
-            })
+            let customers = await sequelize.query(
+                'SELECT customers.*, COUNT(*) AS `quantity_bought`' +
+                'FROM customers RIGHT JOIN bills ON customers.customer_id = bills.customer_id ' +
+                'GROUP BY customers.customer_id',
+                {
+                    type: QueryTypes.SELECT,
+                    raw: true
+                }
+            )
 
             resolve({
                 errCode: 0,
@@ -49,6 +57,7 @@ let getAllCustomers = () => {
                 customers: customers
             })
         } catch (e) {
+            console.log(e)
             resolve({
                 errCode: 1,
                 message: 'Có lỗi xảy ra',

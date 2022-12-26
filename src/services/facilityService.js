@@ -21,7 +21,7 @@ let createFacility = (data) => {
             try {
                 await db.Facility.create({
                     facility_id: new_facility_id,
-                    password: "123456",
+                    password: data.password,
                     facility_name: data.facility_name,
                     phone_number: data.phone_number,
                     address: data.address,
@@ -37,7 +37,6 @@ let createFacility = (data) => {
                     errCode: 1,
                     message: 'Có lỗi xảy ra'
                 });
-                reject(e);
             }
         }
     })
@@ -105,6 +104,22 @@ let getAllFacilities = () => {
             let facilities = await db.Facility.findAll({
                 raw: true
             });
+
+            for (let i = 0; i < facilities.length; i++) {
+                switch (facilities[i].role) {
+                    case 'admin':
+                        facilities[i].role = 'Ban điều hành'
+                        break
+                    case 'factory':
+                        facilities[i].role = 'Nhà máy sản xuất'
+                        break
+                    case 'agent':
+                        facilities[i].role = 'Đại lý phân phối'
+                        break
+                    case 'center':
+                        facilities[i].role = 'Trung tâm bảo hành'
+                }
+            }
 
             resolve({
                 errCode: 0,

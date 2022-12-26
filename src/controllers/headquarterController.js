@@ -4,6 +4,7 @@ const productService = require('../services/productService');
 
 let handleCreateFacility = async (req, res) => {
     if (!req.body.facility_name
+        || !req.body.password
         || !req.body.phone_number
         || !req.body.address
         || !req.body.role) {

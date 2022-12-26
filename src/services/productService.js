@@ -45,12 +45,12 @@ let createProduct = (data) => {
                                 current_at: product.manufacture_at,
                                 status: "Ready to deliver"
                             })
-
-                            resolve({
-                                errCode: 0,
-                                message: 'OK'
-                            })
                         }
+
+                        resolve({
+                            errCode: 0,
+                            message: 'OK'
+                        })
                     } catch (e) {
                         resolve({
                             errCode: 3,

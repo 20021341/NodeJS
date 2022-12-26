@@ -3,6 +3,62 @@ const { sequelize } = require('../models/index');
 const { getFacilityInfoByID } = require('./facilityService')
 const { relocateProduct } = require('./productService')
 
+// agent_id, year, product_line
+let getSalesStatisticsByProductLine = (data) => {
+    return new Promise(async (resolve, reject) => {
+        let agent = await getFacilityInfoByID(data.agent_id)
+        let product_line = await db.Product_Line.findOne({
+            where: {
+                product_line: data.product_line
+            },
+            raw: true
+        })
+
+        if (agent.errCode !== 0) {
+            resolve({
+                errCode: 1,
+                message: 'Không tìm thấy đại lý'
+            })
+        } else if (!product_line) {
+            resolve({
+                errCode: 2,
+                message: 'Không tìm thấy dòng sản phẩm'
+            })
+        } else {
+            try {
+                let statistics = await sequelize.query(
+                    'SELECT months.month AS month, ' +
+                    'SUM(IF(bills.bill_id IS NOT NULL AND bills.buy_at = :agent_id AND YEAR(bills.buy_date) = :year AND products.product_line = :product_line, 1, 0)) AS quantity_sold ' +
+                    'FROM bills JOIN products ON bills.product_id = products.product_id ' +
+                    'RIGHT JOIN months ON MONTH(bills.buy_date) = months.month ' +
+                    'GROUP BY months.month ' +
+                    'ORDER BY month',
+                    {
+                        replacements: {
+                            product_line: data.product_line,
+                            agent_id: data.agent_id,
+                            year: data.year,
+                            type: sequelize.QueryTypes.SELECT
+                        },
+                        raw: true
+                    }
+                )
+
+                resolve({
+                    errCode: 0,
+                    message: 'OK',
+                    statistics: statistics[0]
+                })
+            } catch (e) {
+                resolve({
+                    errCode: 3,
+                    message: 'Có lỗi xảy ra'
+                })
+            }
+        }
+    })
+}
+
 // agent_id
 let deliverCustomersProducts = (data) => {
     return new Promise(async (resolve, reject) => {
@@ -138,11 +194,6 @@ let deliverDefectiveProducts = (data) => {
                             maintain_at: data.center_id,
                             status: "Repairing"
                         })
-
-                        resolve({
-                            errCode: 0,
-                            message: 'OK'
-                        })
                     } else {
                         resolve({
                             errCode: 3,
@@ -150,6 +201,11 @@ let deliverDefectiveProducts = (data) => {
                         })
                     }
                 }
+
+                resolve({
+                    errCode: 0,
+                    message: 'OK'
+                })
             }
         }
     })
@@ -209,6 +265,7 @@ let getProductsNeedRetrieving = (data) => {
 
 module.exports = {
     deliverCustomersProducts: deliverCustomersProducts,
+    getSalesStatisticsByProductLine: getSalesStatisticsByProductLine,
     deliverDefectiveProducts: deliverDefectiveProducts,
     getProductsNeedRetrieving: getProductsNeedRetrieving
 }
