@@ -305,50 +305,57 @@ let reportDefectiveProductLine = (data) => {
          * products = {result, metadata}
          * so products we need is products[0]
          */
-            let products = await sequelize.query(
-                'SELECT products_track.* FROM products_track JOIN products ON products_track.product_id = products.product_id WHERE product_line = :product_line AND products.manufacture_at = :manufacture_at',
-                {
-                    replacements: {
-                        product_line: data.product_line,
-                        manufacture_at: data.factory_id,
-                        type: sequelize.QueryTypes.SELECT
-                    },
-                    raw: true
-                }
-            )
-
-            if (products[0].length === 0) {
-                resolve({
-                    errCode: 2,
-                    message: 'Nhà máy này chưa sản xuất sản phẩm nào thuộc dòng sản phẩm trên'
-                })
-            } else {
-                try {
-                    for (let i = 0; i < products[0].length; i++) {
-                        if (products[0][i].status === "Ready to deliver"
-                            || products[0][i].status === "Ready to sell"
-                            || products[0][i].status === "Sold") {
-                            await db.Products_Track.update(
-                                {
-                                    status: "Defective"
-                                },
-                                {
-                                    where: { product_id: products[0][i].product_id }
-                                }
-                            )
-                        }
+            try {
+                let products = await sequelize.query(
+                    'SELECT products_track.* ' +
+                    'FROM products_track JOIN products ON products_track.product_id = products.product_id ' +
+                    'WHERE product_line = :product_line AND products.manufacture_at = :manufacture_at AND status != :status',
+                    {
+                        replacements: {
+                            product_line: data.product_line,
+                            manufacture_at: data.factory_id,
+                            status: 'Repair done',
+                            type: sequelize.QueryTypes.SELECT
+                        },
+                        raw: true
                     }
-                } catch (e) {
+                )
+
+                if (products[0].length === 0) {
                     resolve({
-                        errCode: 3,
-                        message: 'Có lỗi xảy ra'
+                        errCode: 2,
+                        message: 'Nhà máy này chưa sản xuất sản phẩm nào thuộc dòng sản phẩm trên'
+                    })
+                } else {
+                    try {
+                        for (let i = 0; i < products[0].length; i++) {
+                            if (products[0][i].status === "Ready to deliver"
+                                || products[0][i].status === "Ready to sell"
+                                || products[0][i].status === "Sold") {
+                                await db.Products_Track.update(
+                                    {
+                                        status: "Defective"
+                                    },
+                                    {
+                                        where: { product_id: products[0][i].product_id }
+                                    }
+                                )
+                            }
+                        }
+                    } catch (e) {
+                        resolve({
+                            errCode: 3,
+                            message: 'Có lỗi xảy ra'
+                        })
+                    }
+    
+                    resolve({
+                        errCode: 0,
+                        message: 'OK'
                     })
                 }
-
-                resolve({
-                    errCode: 0,
-                    message: 'OK'
-                })
+            } catch (e) {
+                console.log(e)
             }
         }
     })

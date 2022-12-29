@@ -59,49 +59,6 @@ let getWarrantyStatisticsByProductLine = (data) => {
     })
 }
 
-// center_id, year
-let getBrokenRateStatistics = (data) => {
-    return new Promise(async (resolve, reject) => {
-        let center = await getFacilityInfoByID(data.center_id)
-
-        if (center.errCode !== 0) {
-            resolve({
-                errCode: 1,
-                message: 'Không tìm thấy trung tâm'
-            })
-        } else {
-            try {
-                let statistics = await sequelize.query(
-                    'SELECT a.status, (a.sum/a.total)*100 AS rate ' +
-                    'FROM (SELECT status, count(card_id) AS sum, (SELECT COUNT(card_id) FROM warranty_cards WHERE maintain_at = :center_id) AS total ' +
-                    'FROM warranty_cards ' +
-                    'WHERE maintain_at = :center_id AND YEAR(create_date) = :year ' +
-                    'GROUP BY status) AS a',
-                    {
-                        replacements: {
-                            center_id: data.center_id,
-                            year: data.year,
-                            type: sequelize.QueryTypes.SELECT
-                        },
-                        raw: true
-                    }
-                )
-
-                resolve({
-                    errCode: 0,
-                    message: 'OK',
-                    statistics: statistics[0]
-                })
-            } catch (e) {
-                resolve({
-                    errCode: 3,
-                    message: 'Có lỗi xảy ra'
-                })
-            }
-        }
-    })
-}
-
 // center_id
 let repairProducts = (data) => {
     return new Promise(async (resolve, reject) => {

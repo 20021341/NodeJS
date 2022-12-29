@@ -127,10 +127,6 @@ let initAPIRoutes = (app) => {
     // input: agent_id, year, product_line
     router.get('/center/get-warranty-statistics-by-product-line', centerController.handleGetWarrantyStatisticsByProductLine)
 
-    // Get broken rate statistics
-    // input: agent_id, year
-    router.get('/center/get-broken-rate-statistics', centerController.handleGetBrokenRateStatistics)
-
     // Repair products, some can be repaired will be delivered to the agent where they came from, 
     // some cannot will be delivered to the factory where they've been produced
     // input: center_id

@@ -20,25 +20,6 @@ let handleGetWarrantyStatisticsByProductLine = async (req, res) => {
     })
 }
 
-// center_id, year
-let handleGetBrokenRateStatistics = async (req, res) => {
-    if (!req.query.center_id
-        || !req.query.year) {
-        return res.status(200).json({
-            errCode: 1,
-            message: 'Nhập thiếu thông tin',
-        });
-    }
-
-    let data = await centerService.getBrokenRateStatistics(req.query)
-
-    return res.status(200).json({
-        errCode: data.errCode,
-        message: data.message,
-        statistics: data.statistics
-    })
-}
-
 //center_id
 let handleRepairProducts = async (req, res) => {
     if (!req.body.center_id) {
