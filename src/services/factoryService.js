@@ -19,7 +19,7 @@ let getDefectiveOverProduceStatistics = (data) => {
                     'SELECT a.product_line, a.quantity_defective, b.total ' +
                     'FROM ' +
                     '(SELECT product_lines.product_line, ' +
-                    'SUM(IF(products.product_id IS NOT NULL AND YEAR(manufacture_date) = :year AND manufacture_at = :factory_id, 1, 0)) AS quantity_defective ' +
+                    'SUM(IF(products.product_id IS NOT NULL AND warranty_cards.customer_id IS NOT NULL AND YEAR(manufacture_date) = :year AND manufacture_at = :factory_id, 1, 0)) AS quantity_defective ' +
                     'FROM products JOIN warranty_cards ON products.product_id = warranty_cards.product_id ' +
                     'RIGHT JOIN product_lines ON products.product_line = product_lines.product_line ' +
                     'GROUP BY product_line ' +

@@ -58,5 +58,4 @@ module.exports = {
     handleRepairProducts: handleRepairProducts,
     handleDeliverBrokenProducts: handleDeliverBrokenProducts,
     handleGetWarrantyStatisticsByProductLine: handleGetWarrantyStatisticsByProductLine,
-    handleGetBrokenRateStatistics: handleGetBrokenRateStatistics
 }

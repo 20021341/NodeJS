@@ -241,5 +241,4 @@ module.exports = {
     repairProducts: repairProducts,
     deliverBrokenProducts: deliverBrokenProducts,
     getWarrantyStatisticsByProductLine: getWarrantyStatisticsByProductLine,
-    getBrokenRateStatistics: getBrokenRateStatistics
 }
